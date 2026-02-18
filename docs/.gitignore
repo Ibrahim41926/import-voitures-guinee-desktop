@@ -1,0 +1,6 @@
+# Fichiers temporaires / exports de documentation
+*.tmp
+*.bak
+*.local
+*.draft
+private/

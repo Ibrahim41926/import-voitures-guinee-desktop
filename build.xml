@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ImportVoituresGuinee" default="run" basedir=".">
+    
+    <property name="src.dir" value="src/main/java"/>
+    <property name="resources.dir" value="src/main/resources"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="bin.dir" value="bin"/>
+    <property name="javafx.dir" value="${lib.dir}/javafx-sdk-21"/>
+    <property name="main.class" value="com.importation.App"/>
+    
+    <!-- Classpath -->
+    <path id="classpath">
+        <fileset dir="${javafx.dir}/lib" includes="*.jar"/>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <dirset dir="${bin.dir}"/>
+    </path>
+    
+    <!-- Compilation -->
+    <target name="compile" description="Compile Java source files">
+        <mkdir dir="${bin.dir}"/>
+        <javac srcdir="${src.dir}" 
+               destdir="${bin.dir}"
+               classpathref="classpath"
+               debug="true" 
+               includeantruntime="false">
+            <compilerarg line="--module-path ${javafx.dir}/lib"/>
+            <compilerarg line="--add-modules javafx.controls,javafx.fxml"/>
+        </javac>
+        <copy todir="${bin.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+        <copy todir="${bin.dir}">
+            <fileset dir="${resources.dir}"/>
+        </copy>
+    </target>
+    
+    <!-- Nettoyage -->
+    <target name="clean" description="Clean build directory">
+        <delete dir="${bin.dir}"/>
+    </target>
+    
+    <!-- Exécution -->
+    <target name="run" depends="compile" description="Run the application">
+        <java classname="${main.class}" 
+              classpathref="classpath" 
+              fork="true">
+            <jvmarg line="--module-path ${javafx.dir}/lib"/>
+            <jvmarg line="--add-modules javafx.controls,javafx.fxml"/>
+        </java>
+    </target>
+    
+    <!-- Reconstruction -->
+    <target name="rebuild" depends="clean,compile" description="Clean and compile"/>
+    
+</project>

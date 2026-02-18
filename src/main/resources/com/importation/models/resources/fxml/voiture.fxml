@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.importation.ui.VoitureUIController"
+      styleClass="page">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Gestion des Voitures" styleClass="title"/>
+        <Button text="+ Ajouter Voiture" onAction="#afficherFormulaire"/>
+        <Button text="Modifier" onAction="#modifierVoiture" styleClass="button-secondary"/>
+        <Button text="Supprimer" onAction="#supprimerVoiture" styleClass="button-secondary"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card">
+        <Label text="Rechercher :"/>
+        <TextField fx:id="searchField" promptText="Marque, modele ou immatriculation..." prefWidth="320"/>
+        <Button text="Rechercher" onAction="#rechercher"/>
+        <Button text="Reinitialiser" onAction="#afficherTous" styleClass="button-secondary"/>
+    </HBox>
+
+    <TableView fx:id="tableVoitures" prefHeight="300" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="40" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Marque" prefWidth="80" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="marque" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Modele" prefWidth="80" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="modele" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Année" prefWidth="60" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="annee" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Immatriculation" prefWidth="100" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="immatriculation" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Prix Achat CAD" prefWidth="100" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="prixAchatCAD" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Statut" prefWidth="80" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="statut" /></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date Import" prefWidth="100" sortable="false">
+                <cellValueFactory><PropertyValueFactory property="dateImportation" /></cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+</VBox>

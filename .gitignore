@@ -1,0 +1,49 @@
+# --- Secrets / confidential ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+secrets/
+credentials/
+
+# Local properties that may contain secrets
+application.properties
+src/main/resources/application.properties
+src/main/ressources/application.properties
+
+# --- Local database / data ---
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+*.db
+
+# --- Build outputs ---
+bin/
+bin1/
+target/
+out/
+dist/
+build/
+compile_errors.log
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+Thumbs.db
+.DS_Store
+
+# --- Java / Maven / Gradle ---
+*.class
+dependency-reduced-pom.xml
+
+# --- Large local libs / SDKs ---
+lib/javafx-sdk-21/
+lib/javafx-sdk-21.zip
+

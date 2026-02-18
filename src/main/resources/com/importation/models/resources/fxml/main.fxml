@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.importation.ui.MainController"
+            prefHeight="800" prefWidth="1200">
+    <top>
+        <VBox styleClass="top-bar">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="Tableau de Bord" onAction="#afficherTableauBord"/>
+                <Button text="Voitures" onAction="#afficherVoitures"/>
+                <Button text="Associes" onAction="#afficherAssocies"/>
+                <Button text="Taux de change" onAction="#afficherTauxChange"/>
+                <Button text="Base de donnees" onAction="#afficherBaseDonnees"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="mainContent">
+            <VBox fx:id="tableauBordPane" styleClass="page">
+                <Label text="Tableau de Bord" styleClass="title"/>
+                <Label text="Resume rapide et voitures enregistrées" styleClass="subtitle"/>
+                <HBox spacing="10">
+                    <VBox styleClass="card" prefWidth="180">
+                        <Label text="Total voitures" styleClass="subtitle"/>
+                        <Label fx:id="kpiTotalVoitures" text="0" styleClass="kpi-value"/>
+                    </VBox>
+                    <VBox styleClass="card" prefWidth="180">
+                        <Label text="Voitures vendues" styleClass="subtitle"/>
+                        <Label fx:id="kpiVoituresVendues" text="0" styleClass="kpi-value"/>
+                    </VBox>
+                    <VBox styleClass="card" prefWidth="180">
+                        <Label text="Total associes" styleClass="subtitle"/>
+                        <Label fx:id="kpiTotalAssocies" text="0" styleClass="kpi-value"/>
+                    </VBox>
+                    <VBox styleClass="card" prefWidth="240">
+                        <Label text="Contributions (GNF)" styleClass="subtitle"/>
+                        <Label fx:id="kpiTotalContributions" text="0 GNF" styleClass="kpi-value"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Modifier voiture selectionnée" onAction="#modifierVoitureDashboard" styleClass="button-secondary"/>
+                    <Button text="Supprimer voiture selectionnée" onAction="#supprimerVoitureDashboard" styleClass="button-secondary"/>
+                    <Button text="Exporter en PDF" onAction="#exporterTableauBordPdf" styleClass="button-secondary"/>
+                </HBox>
+                <VBox styleClass="card" maxHeight="360" prefHeight="340">
+                    <TableView fx:id="dashboardTable" prefHeight="300">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                            <TableColumn fx:id="colMarque" text="Marque" prefWidth="100"/>
+                            <TableColumn fx:id="colModele" text="Modele" prefWidth="100"/>
+                            <TableColumn fx:id="colAnnee" text="Annee" prefWidth="70"/>
+                            <TableColumn fx:id="colImmatriculation" text="Immatriculation" prefWidth="120"/>
+                            <TableColumn fx:id="colPrixAchatCad" text="Prix achat CAD" prefWidth="120"/>
+                            <TableColumn fx:id="colTransportCad" text="Transport CAD" prefWidth="110"/>
+                            <TableColumn fx:id="colAssuranceCad" text="Assurance CAD" prefWidth="110"/>
+                            <TableColumn fx:id="colDedouanementGnf" text="Dedouanement GNF" prefWidth="130"/>
+                            <TableColumn fx:id="colFraisDiversCad" text="Frais divers CAD" prefWidth="120"/>
+                            <TableColumn fx:id="colFraisDiversGnf" text="Frais divers GNF" prefWidth="120"/>
+                            <TableColumn fx:id="colCoutTotalGnf" text="Cout total (GNF)" prefWidth="140"/>
+                            <TableColumn fx:id="colPrixReventeGnf" text="Prix Revente GNF" prefWidth="120"/>
+                            <TableColumn fx:id="colDateImportation" text="Date Importation" prefWidth="120"/>
+                            <TableColumn fx:id="colStatut" text="Statut" prefWidth="90"/>
+                            <TableColumn fx:id="colAssocie" text="Associe" prefWidth="130"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+
+            <VBox fx:id="voituresPane" styleClass="page"/>
+            <VBox fx:id="associesPane" styleClass="page"/>
+
+            <VBox fx:id="tauxChangePane" styleClass="page">
+                <Label text="Gestion Taux de Change" styleClass="title"/>
+                <VBox styleClass="card" spacing="10" maxWidth="520">
+                    <Label fx:id="tauxActuelLabel" text="1 CAD = 0 GNF" styleClass="kpi-value"/>
+                    <Label text="Saisissez un nouveau taux (GNF pour 1 CAD)" styleClass="subtitle"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="nouveauTauxField" promptText="Ex: 6400"/>
+                        <Button text="Appliquer" onAction="#appliquerNouveauTaux"/>
+                        <Button text="Par defaut" onAction="#reinitialiserTauxDefaut" styleClass="button-secondary"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <VBox fx:id="baseDonneesPane" styleClass="page">
+                <Label text="Gestion Base de Données" styleClass="title"/>
+                <Label text="Executer des requetes SQL sur la base SQLite" styleClass="subtitle"/>
+                <VBox styleClass="card" spacing="10">
+                    <Label text="Requete SQL" styleClass="subtitle"/>
+                    <TextArea fx:id="sqlQueryArea" prefRowCount="6" promptText="Ex: SELECT * FROM VOITURE;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button text="Executer" onAction="#executerSql"/>
+                        <Button text="Effacer" onAction="#effacerSql" styleClass="button-secondary"/>
+                    </HBox>
+                    <Label text="Resultat" styleClass="subtitle"/>
+                    <TextArea fx:id="sqlResultArea" prefRowCount="14" editable="false"/>
+                </VBox>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox styleClass="status-bar" spacing="10" alignment="CENTER_LEFT">
+            <Label fx:id="statusLabel" text="Pret"/>
+        </HBox>
+    </bottom>
+</BorderPane>

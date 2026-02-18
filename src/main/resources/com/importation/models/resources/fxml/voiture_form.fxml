@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.importation.ui.VoitureFormController"
+      spacing="12"
+      styleClass="page"
+      prefWidth="840">
+
+    <Label text="Nouvelle Voiture" styleClass="title"/>
+
+    <GridPane hgap="10" vgap="10" styleClass="card">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="160"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints prefWidth="160"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Label text="Marque :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="marqueField" promptText="ex: Toyota" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Modele :" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField fx:id="modeleField" promptText="ex: Camry" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="Année :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="anneeSpinner" promptText="2020" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Immatriculation :" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField fx:id="immatriculationField" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+        <Label text="Prix Achat CAD :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="prixAchatField" promptText="0.00" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Transport CAD :" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+        <TextField fx:id="transportField" promptText="0.00" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+        <Label text="Assurance CAD :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="assuranceField" promptText="0.00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Dedouanement GNF :" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+        <TextField fx:id="dedouanementField" promptText="0.00" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+
+        <Label text="Frais Divers CAD :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="fraisDiversCADField" promptText="0.00" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label text="Frais Divers GNF :" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
+        <TextField fx:id="fraisDiversGNFField" promptText="0.00" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+
+        <Label fx:id="prixReventeLabel" text="Prix Revente GNF :" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="prixReventeField" promptText="0.00" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Statut :" GridPane.rowIndex="5" GridPane.columnIndex="2"/>
+        <ComboBox fx:id="statutCombo" prefWidth="180" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
+
+        <Label text="Date Importation :" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="dateImportPicker" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Associé(s) :" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+        <ComboBox fx:id="associeCombo" prefWidth="180" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Enregistrer" onAction="#enregistrerVoiture"/>
+        <Button text="Annuler" styleClass="button-secondary" onAction="#annuler"/>
+    </HBox>
+</VBox>

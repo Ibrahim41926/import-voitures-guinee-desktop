@@ -1,0 +1,126 @@
+/* Base */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #f7f9fc;
+}
+
+.label {
+    -fx-text-fill: #1f2a37;
+}
+
+/* Layout helpers */
+.top-bar {
+    -fx-background-color: linear-gradient(to right, #0f4c81, #1c6ba5);
+    -fx-padding: 12 16 12 16;
+}
+
+.top-bar .button {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+}
+
+.top-bar .button:hover {
+    -fx-background-color: rgba(255,255,255,0.3);
+}
+
+.page {
+    -fx-padding: 16;
+    -fx-spacing: 12;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #d7dce4;
+    -fx-border-radius: 10;
+    -fx-padding: 14;
+}
+
+.title {
+    -fx-font-size: 20;
+    -fx-font-weight: 700;
+}
+
+.subtitle {
+    -fx-font-size: 12;
+    -fx-text-fill: #516173;
+}
+
+.kpi-value {
+    -fx-font-size: 24;
+    -fx-font-weight: 700;
+}
+
+/* Inputs */
+.text-field, .combo-box, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-border-color: #cfd8e3;
+    -fx-border-radius: 8;
+    -fx-padding: 7 10 7 10;
+}
+
+.text-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #1c6ba5;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #1c6ba5;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 8 14 8 14;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #165987;
+}
+
+.button-secondary {
+    -fx-background-color: #6b7280;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #565d69;
+}
+
+/* Tables */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #d7dce4;
+    -fx-border-radius: 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #eff3f8;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: #eff3f8;
+    -fx-border-color: transparent transparent #d7dce4 transparent;
+    -fx-padding: 8;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: 700;
+}
+
+.table-row-cell {
+    -fx-cell-size: 34px;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #dbeeff;
+}
+
+/* Footer */
+.status-bar {
+    -fx-background-color: #eef2f7;
+    -fx-border-color: #d7dce4;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 6 10 6 10;
+}
