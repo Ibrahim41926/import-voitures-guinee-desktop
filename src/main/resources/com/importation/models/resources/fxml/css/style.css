@@ -1,126 +1,173 @@
-/* Base */
+﻿/* Import Voitures Guinee - UI theme (visual-only) */
+
 .root {
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
-    -fx-background-color: #f7f9fc;
+    -fx-font-family: "Segoe UI Variable", "Segoe UI", "Calibri", sans-serif;
+    -fx-background-color: linear-gradient(to bottom, #f8fbff 0%, #eef3ff 100%);
 }
 
 .label {
-    -fx-text-fill: #1f2a37;
+    -fx-text-fill: #1d2939;
 }
 
-/* Layout helpers */
+/* Top navigation */
 .top-bar {
-    -fx-background-color: linear-gradient(to right, #0f4c81, #1c6ba5);
-    -fx-padding: 12 16 12 16;
+    -fx-padding: 14 18 14 18;
+    -fx-background-color: linear-gradient(to right, #0b2f5b 0%, #16487f 60%, #1e5d98 100%);
+    -fx-effect: dropshadow(three-pass-box, rgba(11, 47, 91, 0.30), 20, 0.30, 0, 6);
 }
 
 .top-bar .button {
-    -fx-background-color: rgba(255,255,255,0.2);
-    -fx-text-fill: white;
-    -fx-font-weight: 600;
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-text-fill: #f8fbff;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+    -fx-padding: 8 14 8 14;
+    -fx-border-color: rgba(255, 255, 255, 0.20);
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
 }
 
 .top-bar .button:hover {
-    -fx-background-color: rgba(255,255,255,0.3);
+    -fx-background-color: rgba(255, 255, 255, 0.24);
+    -fx-border-color: rgba(255, 255, 255, 0.34);
 }
 
+/* Pages and cards */
 .page {
-    -fx-padding: 16;
-    -fx-spacing: 12;
+    -fx-padding: 18;
+    -fx-spacing: 14;
 }
 
 .card {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-color: #d7dce4;
-    -fx-border-radius: 10;
-    -fx-padding: 14;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-color: #dde5f2;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(17, 33, 61, 0.08), 16, 0.24, 0, 4);
 }
 
 .title {
-    -fx-font-size: 20;
-    -fx-font-weight: 700;
+    -fx-font-size: 24px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f2547;
 }
 
 .subtitle {
-    -fx-font-size: 12;
-    -fx-text-fill: #516173;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #667085;
 }
 
 .kpi-value {
-    -fx-font-size: 24;
-    -fx-font-weight: 700;
+    -fx-font-size: 27px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0d3a74;
 }
 
 /* Inputs */
-.text-field, .combo-box, .date-picker {
+.text-field,
+.combo-box,
+.date-picker,
+.text-area {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 8;
-    -fx-border-color: #cfd8e3;
-    -fx-border-radius: 8;
-    -fx-padding: 7 10 7 10;
+    -fx-background-radius: 10;
+    -fx-border-color: #ccd7e8;
+    -fx-border-radius: 10;
+    -fx-padding: 8 10 8 10;
 }
 
-.text-field:focused, .combo-box:focused, .date-picker:focused {
-    -fx-border-color: #1c6ba5;
+.text-field:focused,
+.combo-box:focused,
+.date-picker:focused,
+.text-area:focused {
+    -fx-border-color: #1f6fb6;
+    -fx-effect: dropshadow(three-pass-box, rgba(31, 111, 182, 0.22), 10, 0.16, 0, 0);
+}
+
+.text-area .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
 }
 
 /* Buttons */
 .button {
-    -fx-background-color: #1c6ba5;
-    -fx-text-fill: white;
-    -fx-background-radius: 8;
-    -fx-padding: 8 14 8 14;
-    -fx-font-weight: 600;
+    -fx-background-color: linear-gradient(to bottom, #1f73ba 0%, #185f9b 100%);
+    -fx-text-fill: #f8fbff;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-background-radius: 10;
+    -fx-padding: 9 14 9 14;
     -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-background-color: #165987;
+    -fx-background-color: linear-gradient(to bottom, #2a81cb 0%, #1f73ba 100%);
+}
+
+.button:pressed {
+    -fx-background-color: #154d7d;
 }
 
 .button-secondary {
-    -fx-background-color: #6b7280;
+    -fx-background-color: linear-gradient(to bottom, #7b8798 0%, #667085 100%);
 }
 
 .button-secondary:hover {
-    -fx-background-color: #565d69;
+    -fx-background-color: linear-gradient(to bottom, #8a96a7 0%, #7b8798 100%);
 }
 
 /* Tables */
 .table-view {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-color: #d7dce4;
-    -fx-border-radius: 10;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-color: #dde5f2;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 2;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #eff3f8;
+    -fx-background-color: linear-gradient(to bottom, #f2f6fd 0%, #e8eef8 100%);
+    -fx-background-radius: 12 12 0 0;
 }
 
-.table-view .column-header, .table-view .filler {
-    -fx-background-color: #eff3f8;
-    -fx-border-color: transparent transparent #d7dce4 transparent;
-    -fx-padding: 8;
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #d6e0ef transparent;
+    -fx-padding: 10 8 10 8;
 }
 
 .table-view .column-header .label {
-    -fx-font-weight: 700;
+    -fx-text-fill: #1f3654;
+    -fx-font-weight: 800;
 }
 
 .table-row-cell {
-    -fx-cell-size: 34px;
+    -fx-cell-size: 36px;
+    -fx-border-color: transparent transparent #edf2fa transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fcfdff;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #f8fbff;
 }
 
 .table-row-cell:filled:selected {
-    -fx-background-color: #dbeeff;
+    -fx-background-color: #d9ebff;
+    -fx-text-fill: #0f2b52;
 }
 
-/* Footer */
+/* Status bar */
 .status-bar {
-    -fx-background-color: #eef2f7;
-    -fx-border-color: #d7dce4;
+    -fx-background-color: linear-gradient(to right, #eef3fb 0%, #e6eef8 100%);
+    -fx-border-color: #d6e0ef;
     -fx-border-width: 1 0 0 0;
-    -fx-padding: 6 10 6 10;
+    -fx-padding: 7 12 7 12;
 }
