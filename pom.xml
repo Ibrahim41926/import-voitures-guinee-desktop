@@ -70,9 +70,14 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/*.fxml</include>
-                    <include>**/*.css</include>
-                    <include>**/*.properties</include>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/images</directory>
+                <includes>
+                    <include>**/*.png</include>
+                    <include>**/*.ico</include>
                 </includes>
             </resource>
         </resources>

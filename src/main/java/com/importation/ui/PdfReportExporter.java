@@ -12,7 +12,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -411,23 +410,15 @@ public final class PdfReportExporter {
     }
 
     private static PDImageXObject chargerLogo(PDDocument document) {
-        List<Path> candidats = List.of(
-            Path.of("src", "main", "images", "LOGO.png"),
-            Path.of("src", "main", "images", "logo.png"),
-            Path.of("images", "LOGO.png"),
-            Path.of("images", "logo.png")
-        );
-
-        for (Path candidat : candidats) {
-            if (Files.exists(candidat)) {
-                try {
-                    return PDImageXObject.createFromFileByContent(candidat.toFile(), document);
-                } catch (IOException ignored) {
-                    // Continue.
-                }
-            }
+        byte[] logoBytes = AppResources.loadLogoBytes();
+        if (logoBytes == null) {
+            return null;
         }
-        return null;
+        try {
+            return PDImageXObject.createFromByteArray(document, logoBytes, "LOGO.png");
+        } catch (IOException ignored) {
+            return null;
+        }
     }
 
     private static void fillRect(PDPageContentStream content, float x, float y, float width, float height, Color color) throws IOException {

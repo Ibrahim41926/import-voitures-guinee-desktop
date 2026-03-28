@@ -1098,7 +1098,7 @@ public class MainController {
     ) {}
 
     private ImageView creerLogoView() {
-        Image image = chargerLogo();
+        Image image = AppResources.loadLogoImage();
         if (image == null) {
             return new ImageView();
         }
@@ -1107,36 +1107,6 @@ public class MainController {
         imageView.setFitHeight(72);
         imageView.setFitWidth(180);
         return imageView;
-    }
-
-    private Image chargerLogo() {
-        try {
-            Path[] candidats = new Path[] {
-                Path.of("src", "main", "images", "LOGO.png"),
-                Path.of("src", "main", "images", "logo.png"),
-                Path.of("images", "LOGO.png"),
-                Path.of("images", "logo.png")
-            };
-            for (Path p : candidats) {
-                if (Files.exists(p)) {
-                    try (InputStream is = Files.newInputStream(p)) {
-                        return new Image(is);
-                    }
-                }
-            }
-        } catch (Exception ignored) {
-            // Fallback ci-dessous.
-        }
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/LOGO.png");
-            if (is != null) {
-                return new Image(is);
-            }
-        } catch (Exception ignored) {
-            // Aucun logo charge.
-        }
-        return null;
     }
 
     private void ouvrirPopupVoiture(Voiture voiture) {
