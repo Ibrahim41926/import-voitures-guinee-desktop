@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -38,19 +39,23 @@ import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.Printer;
 import javafx.scene.control.TableCell;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javax.swing.filechooser.FileSystemView;
 
 import com.importation.models.dao.DatabaseConnection;
 import com.importation.models.dao.controllers.utils.Constantes;
 import com.importation.models.dao.controllers.utils.ConvertisseurDevise;
 
 import java.io.IOException;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -595,227 +600,454 @@ public class MainController {
 
     @FXML
     public void exporterTableauBordPdf() {
+        File fichier = null;
         try {
-            PrinterJob job = PrinterJob.createPrinterJob();
-            if (job == null) {
-                statusLabel.setText("Impossible de creer le job d'impression");
+            List<Voiture> voitures = new ArrayList<>(dashboardTable.getItems());
+            if (voitures.isEmpty()) {
+                statusLabel.setText("Aucune voiture a exporter");
                 return;
             }
 
-            boolean confirmer = job.showPrintDialog(mainContent.getScene().getWindow());
-            if (!confirmer) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Exporter le rapport PDF");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier PDF", "*.pdf"));
+            File dossierInitial = determinerDossierExportPdf();
+            if (dossierInitial != null) {
+                fileChooser.setInitialDirectory(dossierInitial);
+            }
+            fileChooser.setInitialFileName(
+                "rapport-vehicules-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm")) + ".pdf"
+            );
+
+            fichier = preparerFichierPdf(fileChooser.showSaveDialog(mainContent.getScene().getWindow()));
+            if (fichier == null) {
                 statusLabel.setText("Export annule");
                 return;
             }
 
-            // Tableau temporaire avec uniquement les colonnes demandees.
-            TableView<Voiture> tableExport = new TableView<>();
-            tableExport.setItems(FXCollections.observableArrayList(dashboardTable.getItems()));
-            tableExport.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-
-            TableColumn<Voiture, String> cMarque = new TableColumn<>("Marque");
-            cMarque.setPrefWidth(90);
-            cMarque.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getMarque()));
-
-            TableColumn<Voiture, String> cModele = new TableColumn<>("Modele");
-            cModele.setPrefWidth(90);
-            cModele.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getModele()));
-
-            TableColumn<Voiture, Integer> cAnnee = new TableColumn<>("Annee");
-            cAnnee.setPrefWidth(65);
-            cAnnee.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getAnnee()).asObject());
-
-            TableColumn<Voiture, Double> cPrixAchat = new TableColumn<>("Prix Achat (CAD)");
-            cPrixAchat.setPrefWidth(100);
-            cPrixAchat.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getPrixAchatCAD()).asObject());
-            setCurrencyCellFactory(cPrixAchat, "CAD");
-
-            TableColumn<Voiture, Double> cTransport = new TableColumn<>("Transport (CAD)");
-            cTransport.setPrefWidth(90);
-            cTransport.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getTransportCAD()).asObject());
-            setCurrencyCellFactory(cTransport, "CAD");
-
-            TableColumn<Voiture, Double> cDedouanement = new TableColumn<>("Dedouanement (GNF)");
-            cDedouanement.setPrefWidth(100);
-            cDedouanement.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getDedouanementGNF()).asObject());
-            setCurrencyCellFactory(cDedouanement, "GNF");
-
-            TableColumn<Voiture, String> cDateImport = new TableColumn<>("Date Importation");
-            cDateImport.setPrefWidth(100);
-            cDateImport.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getDateImportation() == null ? "" : cell.getValue().getDateImportation().toString())
-            );
-
-            TableColumn<Voiture, Double> cPrixVente = new TableColumn<>("Prix Vente (GNF)");
-            cPrixVente.setPrefWidth(100);
-            cPrixVente.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getPrixReventeGNF()).asObject());
-            cPrixVente.setCellFactory(c -> new TableCell<Voiture, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null || getTableRow() == null || getTableRow().getItem() == null) {
-                        setText(null);
-                        return;
-                    }
-                    Voiture v = getTableRow().getItem();
-                    if (estStatutVendu(v.getStatut())) {
-                        setText("GNF " + String.format(Locale.US, "%,.0f", item));
-                    } else {
-                        setText("");
-                    }
-                }
-            });
-
-            TableColumn<Voiture, Double> cCoutTotal = new TableColumn<>("Cout Total (GNF)");
-            cCoutTotal.setPrefWidth(110);
-            cCoutTotal.setCellValueFactory(cell ->
-                new SimpleDoubleProperty(VoitureController.calculerCoutTotal(cell.getValue())).asObject()
-            );
-            setCurrencyCellFactory(cCoutTotal, "GNF");
-
-            tableExport.getColumns().addAll(
-                cMarque, cModele, cAnnee, cPrixAchat, cTransport, cDedouanement, cDateImport, cPrixVente, cCoutTotal
-            );
-
-            double largeurColonnes = 0.0;
-            for (TableColumn<Voiture, ?> col : tableExport.getColumns()) {
-                largeurColonnes += col.getPrefWidth();
-            }
-
-            int nbLignes = tableExport.getItems() == null ? 0 : tableExport.getItems().size();
-            double hauteurHeader = 32.0;
-            double fixedCellSize = 28.0;
-            tableExport.setFixedCellSize(fixedCellSize);
-            double hauteurTotale = hauteurHeader + (nbLignes * fixedCellSize) + 2.0;
-            tableExport.setPrefWidth(largeurColonnes + 2.0);
-            tableExport.setMinWidth(largeurColonnes + 2.0);
-            tableExport.setMaxWidth(largeurColonnes + 2.0);
-            tableExport.setPrefHeight(hauteurTotale);
-            tableExport.setMinHeight(hauteurTotale);
-            tableExport.setMaxHeight(hauteurTotale);
-
-            double totalAchatCad = 0.0;
-            double totalDedouanementGnf = 0.0;
-            double totalVenteGnf = 0.0;
-            for (Voiture v : tableExport.getItems()) {
-                totalAchatCad += v.getPrixAchatCAD();
-                totalDedouanementGnf += v.getDedouanementGNF();
-                if (estStatutVendu(v.getStatut())) {
-                    totalVenteGnf += v.getPrixReventeGNF();
-                }
-            }
-
-            Label titre = new Label("TABLEAU DES VOITURES");
-            titre.setStyle("-fx-font-size: 21px; -fx-font-weight: 800;");
-            Label sousTitre = new Label("Gestion Importation Voitures - Guinee");
-            sousTitre.setStyle("-fx-font-size: 13px; -fx-font-weight: 600;");
-            String dateExport = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            String numeroRapport = LocalDateTime.now().format(DateTimeFormatter.ofPattern("'RPT-'yyyyMMdd'-'HHmmss"));
-            Label rapport = new Label("Rapport: " + numeroRapport);
-            rapport.setStyle("-fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: #111827;");
-            Label meta = new Label(
-                "Date export: " + dateExport
-                + " | Taux: 1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF"
-                + " | Lignes: " + nbLignes
-            );
-            meta.setStyle("-fx-font-size: 11px; -fx-text-fill: #374151;");
-            Label resume = new Label(
-                "Total achat: CAD " + String.format(Locale.US, "%,.0f", totalAchatCad)
-                + " | Total dedouanement: GNF " + String.format(Locale.US, "%,.0f", totalDedouanementGnf)
-                + " | Total vente (vendues): GNF " + String.format(Locale.US, "%,.0f", totalVenteGnf)
-            );
-            resume.setStyle("-fx-font-size: 11px; -fx-text-fill: #374151;");
-
-            ImageView logoGauche = creerLogoView();
-            ImageView logoDroite = creerLogoView();
-
-            VBox blocTexte = new VBox(3, titre, sousTitre, rapport, meta, resume);
-            blocTexte.setAlignment(Pos.CENTER);
-
-            Region espaceGauche = new Region();
-            Region espaceDroite = new Region();
-            HBox.setHgrow(espaceGauche, Priority.ALWAYS);
-            HBox.setHgrow(espaceDroite, Priority.ALWAYS);
-
-            HBox entete = new HBox(16, logoGauche, espaceGauche, blocTexte, espaceDroite, logoDroite);
-            entete.setAlignment(Pos.CENTER);
-            entete.setStyle("-fx-padding: 8 4 8 4;");
-
-            Region separateur = new Region();
-            separateur.setPrefHeight(2);
-            separateur.setMinHeight(2);
-            separateur.setMaxHeight(2);
-            separateur.setPrefWidth(largeurColonnes + 2.0);
-            separateur.setStyle("-fx-background-color: #1f2937;");
-
-            Region separateurFooter = new Region();
-            separateurFooter.setPrefHeight(1);
-            separateurFooter.setMinHeight(1);
-            separateurFooter.setMaxHeight(1);
-            separateurFooter.setPrefWidth(largeurColonnes + 2.0);
-            separateurFooter.setStyle("-fx-background-color: #d1d5db;");
-
-            Label footerGauche = new Label("Genere par Import Voitures Guinee");
-            footerGauche.setStyle("-fx-font-size: 10px; -fx-text-fill: #4b5563;");
-            Label footerCentre = new Label("Confidentiel - Usage interne");
-            footerCentre.setStyle("-fx-font-size: 10px; -fx-text-fill: #4b5563;");
-            Label footerDroite = new Label("Page 1/1");
-            footerDroite.setStyle("-fx-font-size: 10px; -fx-text-fill: #4b5563;");
-            Region footerSpace1 = new Region();
-            Region footerSpace2 = new Region();
-            HBox.setHgrow(footerSpace1, Priority.ALWAYS);
-            HBox.setHgrow(footerSpace2, Priority.ALWAYS);
-            HBox footer = new HBox(8, footerGauche, footerSpace1, footerCentre, footerSpace2, footerDroite);
-            footer.setAlignment(Pos.CENTER);
-            footer.setPrefWidth(largeurColonnes + 2.0);
-
-            VBox contentToPrint = new VBox(10, entete, separateur, tableExport, separateurFooter, footer);
-            contentToPrint.setAlignment(Pos.TOP_CENTER);
-            contentToPrint.setPrefWidth(largeurColonnes + 2.0);
-
-            // Important: rattacher le noeud a une scene pour forcer la creation du skin avant impression.
-            Group printRoot = new Group(contentToPrint);
-            Scene printScene = new Scene(printRoot);
-            printScene.getStylesheets().addAll(mainContent.getScene().getStylesheets());
-
-            contentToPrint.applyCss();
-            contentToPrint.layout();
-            printRoot.applyCss();
-            printRoot.layout();
-
-            double largeurZone = contentToPrint.getBoundsInLocal().getWidth();
-            double hauteurZone = contentToPrint.getBoundsInLocal().getHeight();
-
-            // Force toujours le portrait.
-            PageLayout portrait = job.getPrinter().createPageLayout(
-                Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT
-            );
-            job.getJobSettings().setPageLayout(portrait);
-
-            double largeurImprimable = portrait.getPrintableWidth();
-            double hauteurImprimable = portrait.getPrintableHeight();
-
-            double scaleX = largeurImprimable / largeurZone;
-            double scaleY = hauteurImprimable / hauteurZone;
-            double facteur = Math.min(scaleX, scaleY);
-
-            Scale scale = new Scale(facteur, facteur);
-            printRoot.getTransforms().add(scale);
-
-            boolean imprime = job.printPage(printRoot);
-
-            printRoot.getTransforms().remove(scale);
-
-            if (imprime) {
-                job.endJob();
-                statusLabel.setText("Export PDF du tableau (colonnes filtrees) termine");
-            } else {
-                statusLabel.setText("Echec export PDF");
-            }
+            PdfReportExporter.export(fichier.toPath(), voitures, ConvertisseurDevise.getTauxChange());
+            statusLabel.setText("Rapport PDF genere: " + fichier.getAbsolutePath());
         } catch (Exception e) {
             statusLabel.setText("Erreur export PDF: " + e.getMessage());
+            afficherErreurExportPdf(fichier, e);
         }
     }
+
+    private File preparerFichierPdf(File fichierSelectionne) {
+        if (fichierSelectionne == null) {
+            return null;
+        }
+
+        String nom = fichierSelectionne.getName();
+        if (nom.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            return fichierSelectionne;
+        }
+
+        File parent = fichierSelectionne.getParentFile();
+        return new File(parent, nom + ".pdf");
+    }
+
+    private File determinerDossierExportPdf() {
+        File dossierParDefaut = FileSystemView.getFileSystemView().getDefaultDirectory();
+        if (estDossierAccessible(dossierParDefaut)) {
+            return dossierParDefaut;
+        }
+
+        Path[] candidats = new Path[] {
+            Path.of(System.getProperty("user.home"), "Documents"),
+            Path.of(System.getProperty("user.home"), "Downloads"),
+            Path.of(System.getProperty("user.home")),
+            Path.of(".").toAbsolutePath().normalize()
+        };
+
+        for (Path candidat : candidats) {
+            File dossier = candidat.toFile();
+            if (estDossierAccessible(dossier)) {
+                return dossier;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean estDossierAccessible(File dossier) {
+        return dossier != null && dossier.exists() && dossier.isDirectory() && dossier.canWrite();
+    }
+
+    private void afficherErreurExportPdf(File fichier, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur export PDF");
+        alert.setHeaderText("Impossible d'enregistrer le document PDF.");
+
+        String chemin = fichier == null ? "(aucun chemin selectionne)" : fichier.getAbsolutePath();
+        String cause = e.getMessage() == null || e.getMessage().isBlank()
+            ? e.getClass().getSimpleName()
+            : e.getMessage();
+
+        alert.setContentText(
+            "Chemin cible: " + chemin
+                + "\nCause: " + cause
+                + "\nConseil: essaie d'enregistrer dans Documents ou Downloads et ferme le PDF s'il est deja ouvert."
+        );
+
+        if (mainContent != null && mainContent.getScene() != null) {
+            alert.initOwner(mainContent.getScene().getWindow());
+        }
+        alert.showAndWait();
+    }
+
+    private ResumeExportPdf calculerResumeExport(List<Voiture> voitures) {
+        long totalVendues = 0;
+        double totalAchatCad = 0.0;
+        double totalCoutGnf = 0.0;
+        double totalVenteGnf = 0.0;
+        double margeVenduesGnf = 0.0;
+
+        for (Voiture voiture : voitures) {
+            totalAchatCad += voiture.getPrixAchatCAD();
+            double coutTotal = VoitureController.calculerCoutTotal(voiture);
+            totalCoutGnf += coutTotal;
+
+            if (estStatutVendu(voiture.getStatut())) {
+                totalVendues++;
+                totalVenteGnf += voiture.getPrixReventeGNF();
+                margeVenduesGnf += voiture.getPrixReventeGNF() - coutTotal;
+            }
+        }
+
+        return new ResumeExportPdf(
+            voitures.size(),
+            totalVendues,
+            totalAchatCad,
+            totalCoutGnf,
+            totalVenteGnf,
+            margeVenduesGnf
+        );
+    }
+
+    private List<List<Voiture>> decouperVoituresPourRapport(List<Voiture> voitures, int lignesPremierePage, int lignesPagesSuivantes) {
+        List<List<Voiture>> pages = new ArrayList<>();
+        int index = 0;
+        boolean premierePage = true;
+
+        while (index < voitures.size()) {
+            int tailleBloc = premierePage ? lignesPremierePage : lignesPagesSuivantes;
+            int fin = Math.min(index + tailleBloc, voitures.size());
+            pages.add(new ArrayList<>(voitures.subList(index, fin)));
+            index = fin;
+            premierePage = false;
+        }
+
+        return pages;
+    }
+
+    private VBox creerPageRapportPdf(
+        List<Voiture> pageItems,
+        ResumeExportPdf resume,
+        String numeroRapport,
+        String dateExport,
+        int pageCourante,
+        int totalPages,
+        boolean premierePage
+    ) {
+        VBox page = new VBox(16);
+        page.getStyleClass().add("print-page");
+
+        ImageView logo = creerLogoView();
+        logo.setFitHeight(54);
+        logo.setFitWidth(150);
+
+        Label kicker = new Label("PORTEFEUILLE IMPORTATION");
+        kicker.getStyleClass().add("report-kicker");
+        Label titre = new Label("Rapport vehicules");
+        titre.getStyleClass().add("report-title");
+        Label sousTitre = new Label("Synthese d inventaire, couts et ventes");
+        sousTitre.getStyleClass().add("report-subtitle");
+
+        VBox blocTitre = new VBox(4, kicker, titre, sousTitre);
+        blocTitre.setAlignment(Pos.CENTER_LEFT);
+
+        Label rapport = new Label("Rapport " + numeroRapport);
+        rapport.getStyleClass().add("report-meta-strong");
+        Label dateLabel = new Label("Genere le " + dateExport);
+        dateLabel.getStyleClass().add("report-meta");
+        Label taux = new Label("Taux applique: 1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF");
+        taux.getStyleClass().add("report-meta");
+        Label pagination = new Label("Page " + pageCourante + " / " + totalPages);
+        pagination.getStyleClass().add("report-meta");
+
+        VBox blocMeta = new VBox(5, rapport, dateLabel, taux, pagination);
+        blocMeta.setAlignment(Pos.CENTER_RIGHT);
+        blocMeta.setMinWidth(220);
+
+        Region espace = new Region();
+        HBox.setHgrow(espace, Priority.ALWAYS);
+
+        HBox hero = new HBox(18, logo, blocTitre, espace, blocMeta);
+        hero.setAlignment(Pos.CENTER_LEFT);
+        hero.getStyleClass().add("report-hero");
+        page.getChildren().add(hero);
+
+        if (premierePage) {
+            FlowPane grille = new FlowPane(12, 12);
+            grille.getStyleClass().add("metric-grid");
+            grille.getChildren().addAll(
+                creerCarteSynthese("Vehicules exportes", String.valueOf(resume.totalVehicules()), "Nombre de lignes incluses dans le rapport", "metric-card-ink"),
+                creerCarteSynthese("Vehicules vendues", String.valueOf(resume.totalVendues()), "Unites vendues sur l ensemble exporte", "metric-card-teal"),
+                creerCarteSynthese("Total achat", formatCadPdf(resume.totalAchatCad()), "Montant cumule des achats en CAD", "metric-card-copper"),
+                creerCarteSynthese("Cout total", formatGnfPdf(resume.totalCoutGnf()), "Cout complet converti en GNF", "metric-card-amber"),
+                creerCarteSynthese("Marge realisee", formatGnfPdf(resume.margeVenduesGnf()), "Ventes vendues moins couts complets", "metric-card-teal")
+            );
+            page.getChildren().add(grille);
+        }
+
+        Label sectionTitre = new Label(premierePage ? "Detail des vehicules" : "Suite du detail des vehicules");
+        sectionTitre.getStyleClass().add("report-section-title");
+        Label sectionNote = new Label(
+            premierePage
+                ? "Vue de lecture rapide avec les colonnes les plus utiles au pilotage."
+                : "Continuation de l inventaire exporte."
+        );
+        sectionNote.getStyleClass().add("report-section-note");
+
+        VBox sectionTable = new VBox(8, sectionTitre, sectionNote, creerTableauExportPdf(pageItems));
+        sectionTable.getStyleClass().add("report-section");
+        page.getChildren().add(sectionTable);
+
+        Label footerGauche = new Label("Import Voitures Guinee");
+        footerGauche.getStyleClass().add("report-footer-text");
+        Label footerCentre = new Label("Document interne");
+        footerCentre.getStyleClass().add("report-footer-text");
+        Label footerDroite = new Label("Page " + pageCourante + " / " + totalPages);
+        footerDroite.getStyleClass().add("report-footer-text");
+
+        Region footerSpace1 = new Region();
+        Region footerSpace2 = new Region();
+        HBox.setHgrow(footerSpace1, Priority.ALWAYS);
+        HBox.setHgrow(footerSpace2, Priority.ALWAYS);
+
+        HBox footer = new HBox(8, footerGauche, footerSpace1, footerCentre, footerSpace2, footerDroite);
+        footer.setAlignment(Pos.CENTER_LEFT);
+        footer.getStyleClass().add("report-footer");
+        page.getChildren().add(footer);
+
+        return page;
+    }
+
+    private VBox creerCarteSynthese(String titre, String valeur, String detail, String ton) {
+        Label titreLabel = new Label(titre);
+        titreLabel.getStyleClass().add("metric-label");
+
+        Label valeurLabel = new Label(valeur);
+        valeurLabel.getStyleClass().add("metric-value");
+
+        Label detailLabel = new Label(detail);
+        detailLabel.getStyleClass().add("metric-detail");
+        detailLabel.setWrapText(true);
+
+        VBox carte = new VBox(4, titreLabel, valeurLabel, detailLabel);
+        carte.getStyleClass().setAll("metric-card", ton);
+        carte.setPrefWidth(175);
+        return carte;
+    }
+
+    private TableView<Voiture> creerTableauExportPdf(List<Voiture> voitures) {
+        TableView<Voiture> table = new TableView<>(FXCollections.observableArrayList(voitures));
+        table.getStyleClass().setAll("table-view", "report-table");
+        table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        table.setSelectionModel(null);
+        table.setFocusTraversable(false);
+        table.setFixedCellSize(30);
+
+        TableColumn<Voiture, String> cReference = new TableColumn<>("Ref");
+        cReference.setPrefWidth(82);
+        cReference.setCellValueFactory(cell -> new SimpleStringProperty(formaterReferencePdf(cell.getValue())));
+
+        TableColumn<Voiture, String> cVehicule = new TableColumn<>("Vehicule");
+        cVehicule.setPrefWidth(175);
+        cVehicule.setCellValueFactory(cell -> new SimpleStringProperty(formaterVehiculePdf(cell.getValue())));
+
+        TableColumn<Voiture, String> cImport = new TableColumn<>("Import");
+        cImport.setPrefWidth(86);
+        cImport.setCellValueFactory(cell -> new SimpleStringProperty(formaterDatePdf(cell.getValue())));
+
+        TableColumn<Voiture, String> cStatut = new TableColumn<>("Statut");
+        cStatut.setPrefWidth(86);
+        cStatut.setCellValueFactory(cell -> new SimpleStringProperty(formaterStatutPdf(cell.getValue())));
+        cStatut.setCellFactory(column -> new TableCell<Voiture, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(item);
+                Voiture voiture = getTableRow() == null ? null : getTableRow().getItem();
+                if (voiture != null && estStatutVendu(voiture.getStatut())) {
+                    setStyle("-fx-text-fill: #166534; -fx-font-weight: 800;");
+                } else {
+                    setStyle("-fx-text-fill: #9a6700; -fx-font-weight: 700;");
+                }
+            }
+        });
+
+        TableColumn<Voiture, String> cAchat = new TableColumn<>("Achat CAD");
+        cAchat.setPrefWidth(100);
+        cAchat.setCellValueFactory(cell -> new SimpleStringProperty(formatCadPdf(cell.getValue().getPrixAchatCAD())));
+
+        TableColumn<Voiture, String> cCout = new TableColumn<>("Cout GNF");
+        cCout.setPrefWidth(100);
+        cCout.setCellValueFactory(cell -> new SimpleStringProperty(formatGnfPdf(VoitureController.calculerCoutTotal(cell.getValue()))));
+
+        TableColumn<Voiture, String> cVente = new TableColumn<>("Vente GNF");
+        cVente.setPrefWidth(100);
+        cVente.setCellValueFactory(cell -> new SimpleStringProperty(formaterVentePdf(cell.getValue())));
+
+        TableColumn<Voiture, String> cMarge = new TableColumn<>("Marge GNF");
+        cMarge.setPrefWidth(104);
+        cMarge.setCellValueFactory(cell -> new SimpleStringProperty(formaterMargePdf(cell.getValue())));
+        cMarge.setCellFactory(column -> new TableCell<Voiture, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(item);
+                Voiture voiture = getTableRow() == null ? null : getTableRow().getItem();
+                if (voiture == null || !estStatutVendu(voiture.getStatut())) {
+                    setStyle("-fx-text-fill: #64748b;");
+                    return;
+                }
+
+                double marge = voiture.getPrixReventeGNF() - VoitureController.calculerCoutTotal(voiture);
+                if (marge >= 0) {
+                    setStyle("-fx-text-fill: #166534; -fx-font-weight: 800;");
+                } else {
+                    setStyle("-fx-text-fill: #b42318; -fx-font-weight: 800;");
+                }
+            }
+        });
+
+        table.getColumns().addAll(cReference, cVehicule, cImport, cStatut, cAchat, cCout, cVente, cMarge);
+
+        double largeurColonnes = 0.0;
+        for (TableColumn<Voiture, ?> colonne : table.getColumns()) {
+            largeurColonnes += colonne.getPrefWidth();
+        }
+
+        double hauteurHeader = 34.0;
+        double hauteurTotale = hauteurHeader + (voitures.size() * table.getFixedCellSize()) + 2.0;
+        table.setPrefWidth(largeurColonnes + 2.0);
+        table.setMinWidth(largeurColonnes + 2.0);
+        table.setMaxWidth(largeurColonnes + 2.0);
+        table.setPrefHeight(hauteurTotale);
+        table.setMinHeight(hauteurTotale);
+        table.setMaxHeight(hauteurTotale);
+
+        return table;
+    }
+
+    private boolean imprimerPageRapport(PrinterJob job, PageLayout pageLayout, VBox contenu, String styleImpression) {
+        Group printRoot = new Group(contenu);
+        Scene printScene = new Scene(printRoot);
+        if (styleImpression != null) {
+            printScene.getStylesheets().add(styleImpression);
+        }
+
+        contenu.applyCss();
+        contenu.layout();
+        printRoot.applyCss();
+        printRoot.layout();
+
+        double largeurZone = contenu.getBoundsInLocal().getWidth();
+        double hauteurZone = contenu.getBoundsInLocal().getHeight();
+        double largeurImprimable = pageLayout.getPrintableWidth();
+        double hauteurImprimable = pageLayout.getPrintableHeight();
+
+        double scaleX = largeurImprimable / largeurZone;
+        double scaleY = hauteurImprimable / hauteurZone;
+        double facteur = Math.min(1.0, Math.min(scaleX, scaleY));
+
+        Scale scale = new Scale(facteur, facteur);
+        printRoot.getTransforms().add(scale);
+        boolean imprime = job.printPage(pageLayout, printRoot);
+        printRoot.getTransforms().remove(scale);
+        return imprime;
+    }
+
+    private String chargerFeuilleStyleImpression() {
+        try {
+            return getClass()
+                .getResource("/com/importation/models/resources/fxml/css/print-report.css")
+                .toExternalForm();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String formaterReferencePdf(Voiture voiture) {
+        String immatriculation = voiture.getImmatriculation();
+        if (immatriculation == null || immatriculation.isBlank()) {
+            return "ID-" + voiture.getId();
+        }
+        return immatriculation;
+    }
+
+    private String formaterVehiculePdf(Voiture voiture) {
+        return voiture.getMarque() + " " + voiture.getModele() + " (" + voiture.getAnnee() + ")";
+    }
+
+    private String formaterDatePdf(Voiture voiture) {
+        if (voiture.getDateImportation() == null) {
+            return "-";
+        }
+        return voiture.getDateImportation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    private String formaterStatutPdf(Voiture voiture) {
+        if (voiture.getStatut() == null || voiture.getStatut().isBlank()) {
+            return "-";
+        }
+        return voiture.getStatut().replace('_', ' ');
+    }
+
+    private String formaterVentePdf(Voiture voiture) {
+        if (!estStatutVendu(voiture.getStatut())) {
+            return "-";
+        }
+        return formatGnfPdf(voiture.getPrixReventeGNF());
+    }
+
+    private String formaterMargePdf(Voiture voiture) {
+        if (!estStatutVendu(voiture.getStatut())) {
+            return "-";
+        }
+        return formatGnfPdf(voiture.getPrixReventeGNF() - VoitureController.calculerCoutTotal(voiture));
+    }
+
+    private String formatCadPdf(double montant) {
+        return "CAD " + String.format(Locale.US, "%,.2f", montant);
+    }
+
+    private String formatGnfPdf(double montant) {
+        return "GNF " + String.format(Locale.US, "%,.0f", montant);
+    }
+
+    private record ResumeExportPdf(
+        int totalVehicules,
+        long totalVendues,
+        double totalAchatCad,
+        double totalCoutGnf,
+        double totalVenteGnf,
+        double margeVenduesGnf
+    ) {}
 
     private ImageView creerLogoView() {
         Image image = chargerLogo();

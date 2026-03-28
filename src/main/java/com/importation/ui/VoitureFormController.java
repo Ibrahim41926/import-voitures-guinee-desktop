@@ -64,7 +64,7 @@ public class VoitureFormController {
         try {
             associeCombo.setItems(FXCollections.observableArrayList(AssocieDAO.obtenirTous()));
         } catch (SQLException e) {
-            afficherErreur("Erreur chargement", "Impossible de charger les associes: " + e.getMessage());
+            afficherErreur("Erreur chargement", "Impossible de charger les associés: " + e.getMessage());
         }
         mettreAJourVisibilitePrixRevente(statutCombo.getValue());
     }
