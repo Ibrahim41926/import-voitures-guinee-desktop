@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -48,6 +49,7 @@ import com.importation.models.dao.DatabaseConnection;
 import com.importation.models.dao.controllers.utils.Constantes;
 import com.importation.models.dao.controllers.utils.ConvertisseurDevise;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.io.File;
 import java.sql.Connection;
@@ -60,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.InputStream;
@@ -627,6 +630,7 @@ public class MainController {
 
             PdfReportExporter.export(fichier.toPath(), voitures, ConvertisseurDevise.getTauxChange());
             statusLabel.setText("Rapport PDF genere: " + fichier.getAbsolutePath());
+            afficherSuccesExportPdf(fichier);
         } catch (Exception e) {
             statusLabel.setText("Erreur export PDF: " + e.getMessage());
             afficherErreurExportPdf(fichier, e);
@@ -654,8 +658,8 @@ public class MainController {
         }
 
         Path[] candidats = new Path[] {
-            Path.of(System.getProperty("user.home"), "Documents"),
             Path.of(System.getProperty("user.home"), "Downloads"),
+            Path.of(System.getProperty("user.home"), "Documents"),
             Path.of(System.getProperty("user.home")),
             Path.of(".").toAbsolutePath().normalize()
         };
@@ -694,6 +698,50 @@ public class MainController {
             alert.initOwner(mainContent.getScene().getWindow());
         }
         alert.showAndWait();
+    }
+
+    private void afficherSuccesExportPdf(File fichier) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Rapport PDF genere");
+        alert.setHeaderText("Le rapport PDF a bien ete enregistre.");
+
+        String chemin = fichier.getAbsolutePath();
+        boolean desktopDisponible = Desktop.isDesktopSupported();
+        boolean ouvertureFichierDisponible = desktopDisponible && Desktop.getDesktop().isSupported(Desktop.Action.OPEN);
+
+        ButtonType ouvrirPdf = new ButtonType("Ouvrir le PDF");
+        ButtonType ouvrirDossier = new ButtonType("Ouvrir le dossier");
+        ButtonType fermer = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        if (ouvertureFichierDisponible) {
+            alert.getButtonTypes().setAll(ouvrirPdf, ouvrirDossier, fermer);
+        } else {
+            alert.getButtonTypes().setAll(fermer);
+        }
+
+        alert.setContentText(
+            "Chemin du fichier:\n" + chemin
+                + "\n\nTu peux retrouver le PDF dans ce dossier, ou l'ouvrir directement depuis cette boite."
+        );
+
+        if (mainContent != null && mainContent.getScene() != null) {
+            alert.initOwner(mainContent.getScene().getWindow());
+        }
+
+        Optional<ButtonType> choix = alert.showAndWait();
+        if (choix.isEmpty()) {
+            return;
+        }
+
+        try {
+            if (choix.get() == ouvrirPdf) {
+                Desktop.getDesktop().open(fichier);
+            } else if (choix.get() == ouvrirDossier) {
+                Desktop.getDesktop().open(fichier.getParentFile());
+            }
+        } catch (Exception e) {
+            statusLabel.setText("PDF cree mais ouverture impossible: " + e.getMessage());
+        }
     }
 
     private ResumeExportPdf calculerResumeExport(List<Voiture> voitures) {
