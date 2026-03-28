@@ -1,55 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.importation.ui.MainController"
-            prefHeight="800" prefWidth="1200">
+            prefHeight="800" prefWidth="1200"
+            styleClass="app-shell">
     <top>
-        <VBox styleClass="top-bar">
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="Tableau de Bord" onAction="#afficherTableauBord"/>
-                <Button text="Voitures" onAction="#afficherVoitures"/>
-                <Button text="Associes" onAction="#afficherAssocies"/>
-                <Button text="Taux de change" onAction="#afficherTauxChange"/>
-                <Button text="Base de donnees" onAction="#afficherBaseDonnees"/>
+        <VBox styleClass="top-bar" spacing="18">
+            <HBox alignment="CENTER_LEFT" spacing="18" styleClass="masthead">
+                <VBox spacing="4">
+                    <Label text="Importation Canada -> Guinee" styleClass="eyebrow"/>
+                    <Label text="Centre de pilotage" styleClass="brand-title"/>
+                    <Label text="Suivi des voitures, associes, taux de change et operations internes." styleClass="brand-subtitle" wrapText="true"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <VBox alignment="CENTER_RIGHT" spacing="4" styleClass="masthead-chip">
+                    <Label text="Poste actuel" styleClass="chip-label"/>
+                    <Label text="Desktop control room" styleClass="chip-value"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="nav-strip">
+                <Button fx:id="navDashboardButton" text="Tableau de Bord" onAction="#afficherTableauBord" styleClass="nav-button"/>
+                <Button fx:id="navVoituresButton" text="Voitures" onAction="#afficherVoitures" styleClass="nav-button"/>
+                <Button fx:id="navAssociesButton" text="Associes" onAction="#afficherAssocies" styleClass="nav-button"/>
+                <Button fx:id="navTauxButton" text="Taux de change" onAction="#afficherTauxChange" styleClass="nav-button"/>
+                <Button fx:id="navBaseButton" text="Base de donnees" onAction="#afficherBaseDonnees" styleClass="nav-button"/>
             </HBox>
         </VBox>
     </top>
 
     <center>
-        <StackPane fx:id="mainContent">
+        <StackPane fx:id="mainContent" styleClass="content-shell">
             <VBox fx:id="tableauBordPane" styleClass="page">
-                <Label text="Tableau de Bord" styleClass="title"/>
-                <Label text="Resume rapide et voitures enregistrées" styleClass="subtitle"/>
-                <HBox spacing="10">
-                    <VBox styleClass="card" prefWidth="180">
+                <VBox styleClass="page-header" spacing="6">
+                    <Label text="Vue globale" styleClass="eyebrow"/>
+                    <Label text="Tableau de Bord" styleClass="title"/>
+                    <Label text="Pilote l activite, les KPIs et l inventaire depuis un seul ecran." styleClass="lead" wrapText="true"/>
+                </VBox>
+
+                <HBox spacing="14" styleClass="kpi-row">
+                    <VBox styleClass="kpi-card-teal" prefWidth="190">
+                        <Label text="Inventaire" styleClass="kpi-tag"/>
                         <Label text="Total voitures" styleClass="subtitle"/>
                         <Label fx:id="kpiTotalVoitures" text="0" styleClass="kpi-value"/>
                     </VBox>
-                    <VBox styleClass="card" prefWidth="180">
+                    <VBox styleClass="kpi-card-amber" prefWidth="190">
+                        <Label text="Vente" styleClass="kpi-tag"/>
                         <Label text="Voitures vendues" styleClass="subtitle"/>
                         <Label fx:id="kpiVoituresVendues" text="0" styleClass="kpi-value"/>
                     </VBox>
-                    <VBox styleClass="card" prefWidth="180">
+                    <VBox styleClass="kpi-card-copper" prefWidth="190">
+                        <Label text="Reseau" styleClass="kpi-tag"/>
                         <Label text="Total associes" styleClass="subtitle"/>
                         <Label fx:id="kpiTotalAssocies" text="0" styleClass="kpi-value"/>
                     </VBox>
-                    <VBox styleClass="card" prefWidth="240">
+                    <VBox styleClass="kpi-card-ink" prefWidth="250">
+                        <Label text="Finance" styleClass="kpi-tag"/>
                         <Label text="Contributions (GNF)" styleClass="subtitle"/>
                         <Label fx:id="kpiTotalContributions" text="0 GNF" styleClass="kpi-value"/>
                     </VBox>
                 </HBox>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Button text="Modifier voiture selectionnée" onAction="#modifierVoitureDashboard" styleClass="button-secondary"/>
-                    <Button text="Supprimer voiture selectionnée" onAction="#supprimerVoitureDashboard" styleClass="button-secondary"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT" styleClass="action-bar">
+                    <Button text="Modifier voiture selectionnee" onAction="#modifierVoitureDashboard" styleClass="button-secondary"/>
+                    <Button text="Supprimer voiture selectionnee" onAction="#supprimerVoitureDashboard" styleClass="button-secondary"/>
                     <Button text="Exporter en PDF" onAction="#exporterTableauBordPdf" styleClass="button-secondary"/>
                 </HBox>
-                <VBox styleClass="card" maxHeight="360" prefHeight="340">
-                    <TableView fx:id="dashboardTable" prefHeight="300">
+
+                <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" styleClass="table-card-header">
+                        <VBox spacing="4">
+                            <Label text="Inventaire detaille" styleClass="section-title"/>
+                            <Label text="Selectionne une ligne pour modifier, supprimer ou exporter." styleClass="section-note"/>
+                        </VBox>
+                    </HBox>
+                    <TableView fx:id="dashboardTable" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
                             <TableColumn fx:id="colMarque" text="Marque" prefWidth="100"/>
@@ -72,42 +101,68 @@
                 </VBox>
             </VBox>
 
-            <VBox fx:id="voituresPane" styleClass="page"/>
-            <VBox fx:id="associesPane" styleClass="page"/>
+            <VBox fx:id="voituresPane" styleClass="page-host"/>
+            <VBox fx:id="associesPane" styleClass="page-host"/>
 
             <VBox fx:id="tauxChangePane" styleClass="page">
-                <Label text="Gestion Taux de Change" styleClass="title"/>
-                <VBox styleClass="card" spacing="10" maxWidth="520">
-                    <Label fx:id="tauxActuelLabel" text="1 CAD = 0 GNF" styleClass="kpi-value"/>
-                    <Label text="Saisissez un nouveau taux (GNF pour 1 CAD)" styleClass="subtitle"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="nouveauTauxField" promptText="Ex: 6400"/>
-                        <Button text="Appliquer" onAction="#appliquerNouveauTaux"/>
-                        <Button text="Par defaut" onAction="#reinitialiserTauxDefaut" styleClass="button-secondary"/>
-                    </HBox>
+                <VBox styleClass="page-header" spacing="6">
+                    <Label text="Finance" styleClass="eyebrow"/>
+                    <Label text="Gestion Taux de Change" styleClass="title"/>
+                    <Label text="Ajuste le referentiel CAD -> GNF avant de recalculer les operations." styleClass="lead" wrapText="true"/>
                 </VBox>
+
+                <HBox spacing="16">
+                    <VBox styleClass="feature-card" spacing="12" maxWidth="560">
+                        <Label fx:id="tauxActuelLabel" text="1 CAD = 0 GNF" styleClass="kpi-value"/>
+                        <Label text="Saisissez un nouveau taux (GNF pour 1 CAD)." styleClass="lead-secondary" wrapText="true"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="nouveauTauxField" promptText="Ex: 6400"/>
+                            <Button text="Appliquer" onAction="#appliquerNouveauTaux"/>
+                            <Button text="Par defaut" onAction="#reinitialiserTauxDefaut" styleClass="button-secondary"/>
+                        </HBox>
+                        <Label text="Le taux est persiste et reutilise sur les ecrans de couts, ventes et exports." styleClass="section-note" wrapText="true"/>
+                    </VBox>
+
+                    <VBox styleClass="info-card" spacing="10" prefWidth="280">
+                        <Label text="Impact direct" styleClass="section-title"/>
+                        <Label text="Chaque variation du taux influence les couts convertis, le tableau de bord et la lecture des marges." styleClass="body-copy" wrapText="true"/>
+                        <Label text="Utilise un taux stable avant d exporter ou d imprimer les donnees." styleClass="section-note" wrapText="true"/>
+                    </VBox>
+                </HBox>
             </VBox>
 
             <VBox fx:id="baseDonneesPane" styleClass="page">
-                <Label text="Gestion Base de Données" styleClass="title"/>
-                <Label text="Executer des requetes SQL sur la base SQLite" styleClass="subtitle"/>
-                <VBox styleClass="card" spacing="10">
+                <VBox styleClass="page-header" spacing="6">
+                    <Label text="Zone avancee" styleClass="eyebrow"/>
+                    <Label text="Gestion Base de Donnees" styleClass="title"/>
+                    <Label text="Execute des requetes SQLite pour auditer ou corriger les donnees." styleClass="lead" wrapText="true"/>
+                </VBox>
+
+                <VBox styleClass="sql-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" styleClass="table-card-header">
+                        <VBox spacing="4">
+                            <Label text="Console SQL" styleClass="section-title"/>
+                            <Label text="Lecture et ecriture directes sur la base locale." styleClass="section-note"/>
+                        </VBox>
+                    </HBox>
                     <Label text="Requete SQL" styleClass="subtitle"/>
-                    <TextArea fx:id="sqlQueryArea" prefRowCount="6" promptText="Ex: SELECT * FROM VOITURE;"/>
+                    <TextArea fx:id="sqlQueryArea" prefRowCount="6" promptText="Ex: SELECT * FROM VOITURE;" styleClass="sql-editor"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Button text="Executer" onAction="#executerSql"/>
                         <Button text="Effacer" onAction="#effacerSql" styleClass="button-secondary"/>
                     </HBox>
                     <Label text="Resultat" styleClass="subtitle"/>
-                    <TextArea fx:id="sqlResultArea" prefRowCount="14" editable="false"/>
+                    <TextArea fx:id="sqlResultArea" prefRowCount="14" editable="false" VBox.vgrow="ALWAYS" styleClass="sql-output"/>
                 </VBox>
             </VBox>
         </StackPane>
     </center>
 
     <bottom>
-        <HBox styleClass="status-bar" spacing="10" alignment="CENTER_LEFT">
-            <Label fx:id="statusLabel" text="Pret"/>
+        <HBox styleClass="status-bar" spacing="12" alignment="CENTER_LEFT">
+            <Label text="Etat session" styleClass="status-caption"/>
+            <Separator orientation="VERTICAL"/>
+            <Label fx:id="statusLabel" text="Pret" styleClass="status-value"/>
         </HBox>
     </bottom>
 </BorderPane>

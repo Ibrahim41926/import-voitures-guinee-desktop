@@ -16,6 +16,7 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -160,6 +161,21 @@ public class MainController {
 
     @FXML
     private Label kpiTotalContributions;
+
+    @FXML
+    private Button navDashboardButton;
+
+    @FXML
+    private Button navVoituresButton;
+
+    @FXML
+    private Button navAssociesButton;
+
+    @FXML
+    private Button navTauxButton;
+
+    @FXML
+    private Button navBaseButton;
     
     @FXML
     public void initialize() {
@@ -194,6 +210,26 @@ public class MainController {
         pane.setVisible(true);
         pane.setManaged(true);
         pane.toFront();
+    }
+
+    private void mettreEnAvantNavigation(Button boutonActif) {
+        Button[] boutons = {
+            navDashboardButton,
+            navVoituresButton,
+            navAssociesButton,
+            navTauxButton,
+            navBaseButton
+        };
+
+        for (Button bouton : boutons) {
+            if (bouton != null) {
+                bouton.getStyleClass().remove("nav-button-active");
+            }
+        }
+
+        if (boutonActif != null && !boutonActif.getStyleClass().contains("nav-button-active")) {
+            boutonActif.getStyleClass().add("nav-button-active");
+        }
     }
 
     private void configurerTableauBord() {
@@ -364,18 +400,21 @@ public class MainController {
         statusLabel.setText("Tableau de bord");
         chargerTableauBord();
         chargerIndicateurs();
+        mettreEnAvantNavigation(navDashboardButton);
         afficherPaneUnique(tableauBordPane);
     }
     
     @FXML
     public void afficherVoitures() {
         statusLabel.setText("Gestion des voitures");
+        mettreEnAvantNavigation(navVoituresButton);
         afficherPaneUnique(voituresPane);
     }
     
     @FXML
     public void afficherAssocies() {
         statusLabel.setText("Gestion des associÃ©s");
+        mettreEnAvantNavigation(navAssociesButton);
         afficherPaneUnique(associesPane);
     }
     
@@ -383,12 +422,14 @@ public class MainController {
     public void afficherTauxChange() {
         statusLabel.setText("Gestion du taux de change");
         rafraichirTauxChange();
+        mettreEnAvantNavigation(navTauxButton);
         afficherPaneUnique(tauxChangePane);
     }
 
     @FXML
     public void afficherBaseDonnees() {
         statusLabel.setText("Gestion base de donnees");
+        mettreEnAvantNavigation(navBaseButton);
         afficherPaneUnique(baseDonneesPane);
     }
 

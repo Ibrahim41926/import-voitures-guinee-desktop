@@ -28,7 +28,7 @@ public class calculController {
     }
     
     /**
-     * Calcule le coÃƒÆ’Ã‚Â»t total d'importation
+     * Calcule le coût total d'importation
      */
     public static double calculerCoutTotalImportation() throws SQLException {
         List<Voiture> voitures = VoitureDAO.obtenirTous();
@@ -77,7 +77,7 @@ public class calculController {
     }
     
     /**
-     * GÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â¨re un rÃƒÆ’Ã‚Â©sumÃƒÆ’Ã‚Â© financier
+     * Génère un résumé financier
      */
     public static ResumFinancier genererResumFinancier() throws SQLException {
         ResumFinancier resum = new ResumFinancier();
@@ -96,7 +96,7 @@ public class calculController {
     }
     
     /**
-     * Classe interne pour le rÃƒÆ’Ã‚Â©sumÃƒÆ’Ã‚Â© financier
+     * Classe interne pour le résumé financier
      */
     public static class ResumFinancier {
         private int nombreVoituresTotales;

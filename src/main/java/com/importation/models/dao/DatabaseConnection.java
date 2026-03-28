@@ -100,7 +100,7 @@ public class DatabaseConnection {
     }
     
     /**
-     * Ferme la connexion ÃƒÆ’Ã‚Â  la base de donnÃƒÆ’Ã‚Â©es
+     * Ferme la connexion à  la base de données
      */
     public static void fermerConnexion() throws SQLException {
         if (connexion != null && !connexion.isClosed()) {

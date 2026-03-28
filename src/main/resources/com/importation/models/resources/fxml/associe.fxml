@@ -4,33 +4,55 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.importation.ui.AssocieUIController" styleClass="page">
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Gestion des Associes" styleClass="title"/>
-        <Button text="+ Ajouter Associe" onAction="#afficherFormulaire"/>
-        <Button text="Modifier" onAction="#modifierAssocie" styleClass="button-secondary"/>
-        <Button text="Supprimer" onAction="#supprimerAssocie" styleClass="button-secondary"/>
+    <HBox spacing="18" alignment="CENTER_LEFT" styleClass="page-toolbar">
+        <VBox spacing="4">
+            <Label text="Partenaires" styleClass="eyebrow"/>
+            <Label text="Gestion des Associes" styleClass="title"/>
+            <Label text="Centralise les profils, la participation et les contributions." styleClass="lead-secondary" wrapText="true"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="toolbar-actions">
+            <Button text="+ Ajouter Associe" onAction="#afficherFormulaire" styleClass="button-accent"/>
+            <Button text="Modifier" onAction="#modifierAssocie" styleClass="button-secondary"/>
+            <Button text="Supprimer" onAction="#supprimerAssocie" styleClass="button-secondary"/>
+        </HBox>
     </HBox>
 
-    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card">
-        <Label text="Rechercher :"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="search-panel">
+        <VBox spacing="4">
+            <Label text="Recherche rapide" styleClass="section-title"/>
+            <Label text="Filtre les associes par nom ou prenom." styleClass="section-note"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
         <TextField fx:id="searchField" promptText="Nom ou prenom..." prefWidth="300"/>
         <Button text="Rechercher" onAction="#rechercher"/>
         <Button text="Reinitialiser" onAction="#afficherTous" styleClass="button-secondary"/>
     </HBox>
 
-    <TableView fx:id="tableAssocies" prefHeight="300" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn text="ID" prefWidth="40"/>
-            <TableColumn text="Nom" prefWidth="100"/>
-            <TableColumn text="Prenom" prefWidth="100"/>
-            <TableColumn text="Telephone" prefWidth="120"/>
-            <TableColumn text="Email" prefWidth="170"/>
-            <TableColumn text="%% Participation" prefWidth="120"/>
-        </columns>
-    </TableView>
+    <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
+        <HBox alignment="CENTER_LEFT" styleClass="table-card-header">
+            <VBox spacing="4">
+                <Label text="Reseau d associes" styleClass="section-title"/>
+                <Label text="Vue de gestion pour suivre les contacts et la repartition." styleClass="section-note"/>
+            </VBox>
+        </HBox>
+        <TableView fx:id="tableAssocies" prefHeight="300" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn text="ID" prefWidth="40"/>
+                <TableColumn text="Nom" prefWidth="100"/>
+                <TableColumn text="Prenom" prefWidth="100"/>
+                <TableColumn text="Telephone" prefWidth="120"/>
+                <TableColumn text="Email" prefWidth="170"/>
+                <TableColumn text="%% Participation" prefWidth="120"/>
+            </columns>
+        </TableView>
+    </VBox>
 
-    <VBox fx:id="formulaireVBox" spacing="10" styleClass="card" visible="false" managed="false">
-        <Label text="Formulaire Associe" styleClass="subtitle"/>
+    <VBox fx:id="formulaireVBox" spacing="14" styleClass="form-card" visible="false" managed="false">
+        <VBox spacing="4">
+            <Label text="Formulaire Associe" styleClass="section-title"/>
+            <Label text="Renseigne l identite, la participation et la contribution." styleClass="section-note"/>
+        </VBox>
 
         <GridPane hgap="10" vgap="10">
             <columnConstraints>
@@ -40,29 +62,29 @@
                 <ColumnConstraints hgrow="ALWAYS"/>
             </columnConstraints>
 
-            <Label text="Nom :" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label text="Nom :" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <TextField fx:id="nomField" promptText="ex: Diallo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Label text="Prenom :" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <Label text="Prenom :" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
             <TextField fx:id="prenomField" promptText="ex: Ibrahim" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-            <Label text="Telephone :" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label text="Telephone :" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
             <TextField fx:id="telephoneField" promptText="+224 656789012" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <Label text="Email :" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <Label text="Email :" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
             <TextField fx:id="emailField" promptText="email@example.com" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-            <Label text="%% Participation :" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label text="%% Participation :" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <TextField fx:id="pourcentageField" promptText="Calcul auto" editable="false" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="Voiture contribution :" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label text="Voiture contribution :" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
             <ComboBox fx:id="voitureContributionCombo" promptText="Selectionner une voiture" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            <Label text="Montant contribution :" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+            <Label text="Montant contribution :" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
             <TextField fx:id="contributionField" promptText="0.00" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
 
-            <Label text="Devise contribution :" style="-fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <Label text="Devise contribution :" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
             <ComboBox fx:id="deviseContributionCombo" promptText="GNF/CAD" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
         </GridPane>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT">
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="dialog-actions">
             <Button text="Enregistrer" onAction="#enregistrerAssocie"/>
             <Button text="Annuler" onAction="#masquerFormulaire" styleClass="button-secondary"/>
         </HBox>

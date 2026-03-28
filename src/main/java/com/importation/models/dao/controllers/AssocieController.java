@@ -9,10 +9,7 @@ import com.importation.models.dao.controllers.utils.Constantes;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * ContrÃƒÆ’Ã‚Â´leur pour la gestion des associÃƒÆ’Ã‚Â©s
- * GÃƒÆ’Ã‚Â¨re les contributions et la rÃƒÆ’Ã‚Â©partition des bÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©fices
- */
+
 public class AssocieController {
     
     /**
@@ -37,35 +34,27 @@ public class AssocieController {
         return PaimentDAO.ajouter(paiement);
     }
     
-    /**
-     * Met ÃƒÆ’Ã‚Â  jour un associÃƒÆ’Ã‚Â©
-     */
+    
     public static void mettre_a_jour(Associe associe) throws SQLException {
         AssocieDAO.mettre_a_jour(associe);
     }
-        /**
-     * Supprime un associÃƒÆ’Ã‚Â©
-     */
+       
     public static void supprimer(int id) throws SQLException {
         AssocieDAO.supprimer(id);
     }
     
-    /**
-     * RÃƒÆ’Ã‚Â©cupÃƒÆ’Ã‚Â¨re un associÃƒÆ’Ã‚Â©
-     */
+    
     public static Associe obtenirParId(int id) throws SQLException {
         return AssocieDAO.obtenirParId(id);
     }
     
-    /**
-     * RÃƒÆ’Ã‚Â©cupÃƒÆ’Ã‚Â¨re tous les associÃƒÆ’Ã‚Â©s
-     */
+    
     public static List<Associe> obtenirTous() throws SQLException {
         return AssocieDAO.obtenirTous();
     }
     
     /**
-     * Calcule le total des contributions d'un associÃƒÆ’Ã‚Â© en GNF
+     * Calcule le total des contributions d'un associé en GNF
      */
     public static double calculerTotalContributions(int associeId) throws SQLException {
         List<Paiement> paiements = PaimentDAO.obtenirParAssocie(associeId);
@@ -85,7 +74,7 @@ public class AssocieController {
     }
     
     /**
-     * Calcule le total des revenus d'un associÃƒÆ’Ã‚Â© en GNF
+     * Calcule le total des revenus d'un associé en GNF
      */
     public static double calculerTotalRevenus(int associeId) throws SQLException {
         List<Paiement> paiements = PaimentDAO.obtenirParAssocie(associeId);
@@ -105,14 +94,14 @@ public class AssocieController {
     }
     
     /**
-     * Calcule le solde net d'un associÃƒÆ’Ã‚Â© (revenus - contributions) en GNF
+     * Calcule le solde net d'un associé (revenus - contributions) en GNF
      */
     public static double calculerSoldeNet(int associeId) throws SQLException {
         return calculerTotalRevenus(associeId) - calculerTotalContributions(associeId);
     }
     
     /**
-     * RÃƒÆ’Ã‚Â©partit un bÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©fice entre les associÃƒÆ’Ã‚Â©s selon leurs pourcentages
+     * Répartit un bénéfice entre les associés selon leurs pourcentages
      */
     public static void repartirBenefice(int voitureId, double montantBeneficeGNF, String description) throws SQLException {
         List<Associe> associes = obtenirTous();
@@ -136,7 +125,7 @@ public class AssocieController {
     }
     
     /**
-     * Valide les donnÃƒÆ’Ã‚Â©es d'un associÃƒÆ’Ã‚Â©
+     * Valide les données d'un associé
      */
     public static boolean valider(Associe associe) {
         if (associe.getNom() == null || associe.getNom().trim().isEmpty()) {
