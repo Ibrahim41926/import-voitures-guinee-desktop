@@ -37,7 +37,7 @@ public final class PdfReportExporter {
     private PdfReportExporter() {
     }
 
-    public static void export(Path outputFile, List<Voiture> voitures, double tauxChange) throws IOException {
+    public static void export(Path outputFile, List<Voiture> voitures) throws IOException {
         try (PDDocument document = new PDDocument()) {
             PdfFonts fonts = chargerPolices(document);
             PDImageXObject logo = chargerLogo(document);
@@ -56,7 +56,6 @@ public final class PdfReportExporter {
                     logo,
                     pages.get(index),
                     resume,
-                    tauxChange,
                     dateExport,
                     numeroRapport,
                     index + 1,
@@ -80,7 +79,6 @@ public final class PdfReportExporter {
         PDImageXObject logo,
         List<Voiture> voitures,
         ResumeExportPdf resume,
-        double tauxChange,
         String dateExport,
         String numeroRapport,
         int pageCourante,
@@ -93,7 +91,7 @@ public final class PdfReportExporter {
         float y = pageHeight - PAGE_MARGIN;
 
         try (PDPageContentStream content = new PDPageContentStream(document, page)) {
-            y = dessinerEntete(content, fonts, logo, numeroRapport, dateExport, tauxChange, pageCourante, totalPages, contentWidth, y);
+            y = dessinerEntete(content, fonts, logo, numeroRapport, dateExport, pageCourante, totalPages, contentWidth, y);
 
             if (premierePage) {
                 y -= 14f;
@@ -120,7 +118,6 @@ public final class PdfReportExporter {
         PDImageXObject logo,
         String numeroRapport,
         String dateExport,
-        double tauxChange,
         int pageCourante,
         int totalPages,
         float contentWidth,
@@ -144,13 +141,10 @@ public final class PdfReportExporter {
         drawText(content, fonts.bold(), 24f, Color.WHITE, "Rapport vehicules", textStartX, y + 40f);
         drawText(content, fonts.regular(), 11f, new Color(230, 240, 246), "Synthese d inventaire, couts et ventes", textStartX, y + 24f);
 
-        float metaX = x + contentWidth - 180f;
         drawRightText(content, fonts.bold(), 11f, Color.WHITE, "Rapport " + numeroRapport, x + contentWidth - 18f, y + 58f);
         drawRightText(content, fonts.regular(), 10f, new Color(230, 240, 246), "Genere le " + dateExport, x + contentWidth - 18f, y + 43f);
         drawRightText(content, fonts.regular(), 10f, new Color(230, 240, 246),
-            "Taux: 1 CAD = " + String.format(Locale.US, "%,.2f", tauxChange) + " GNF", x + contentWidth - 18f, y + 28f);
-        drawRightText(content, fonts.regular(), 10f, new Color(230, 240, 246),
-            "Page " + pageCourante + " / " + totalPages, x + contentWidth - 18f, y + 13f);
+            "Page " + pageCourante + " / " + totalPages, x + contentWidth - 18f, y + 28f);
 
         return y;
     }
@@ -616,6 +610,11 @@ public final class PdfReportExporter {
         long totalVendues,
         long totalActives,
         double totalAchatCad,
+        double totalTransportCad,
+        double totalAssuranceCad,
+        double totalFraisDiversCad,
+        double totalDedouanementGnf,
+        double totalFraisDiversGnf,
         double totalCoutGnf,
         double totalVenteGnf,
         double margeVenduesGnf,

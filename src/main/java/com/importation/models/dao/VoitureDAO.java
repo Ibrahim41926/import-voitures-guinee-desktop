@@ -17,8 +17,8 @@ public class VoitureDAO {
     public static int ajouter(Voiture voiture) throws SQLException {
         String sql = "INSERT INTO VOITURE (marque, modele, annee, immatriculation, prixAchatCAD, " +
                      "transportCAD, assuranceCAD, dedouanementGNF, fraisDiversCAD, fraisDiversGNF, " +
-                     "prixReventeGNF, dateImportation, statut, associeId) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "prixReventeGNF, tauxChangeCADGNF, dateImportation, statut, associeId) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement pstmt = DatabaseConnection.obtenirConnexion().prepareStatement(sql)) {
             pstmt.setString(1, voiture.getMarque());
@@ -32,9 +32,10 @@ public class VoitureDAO {
             pstmt.setDouble(9, voiture.getFraisDiversCAD());
             pstmt.setDouble(10, voiture.getFraisDiversGNF());
             pstmt.setDouble(11, voiture.getPrixReventeGNF());
-            pstmt.setDate(12, Date.valueOf(voiture.getDateImportation()));
-            pstmt.setString(13, voiture.getStatut() != null ? voiture.getStatut() : Constantes.STATUT_EN_COURS);
-            pstmt.setInt(14, voiture.getAssocieId());
+            pstmt.setDouble(12, voiture.getTauxChangeCADGNF());
+            pstmt.setDate(13, Date.valueOf(voiture.getDateImportation()));
+            pstmt.setString(14, voiture.getStatut() != null ? voiture.getStatut() : Constantes.STATUT_EN_COURS);
+            pstmt.setInt(15, voiture.getAssocieId());
             
             pstmt.executeUpdate();
             
@@ -55,7 +56,7 @@ public class VoitureDAO {
     public static void mettre_a_jour(Voiture voiture) throws SQLException {
         String sql = "UPDATE VOITURE SET marque=?, modele=?, annee=?, immatriculation=?, " +
                      "prixAchatCAD=?, transportCAD=?, assuranceCAD=?, dedouanementGNF=?, " +
-                     "fraisDiversCAD=?, fraisDiversGNF=?, prixReventeGNF=?, dateImportation=?, " +
+                     "fraisDiversCAD=?, fraisDiversGNF=?, prixReventeGNF=?, tauxChangeCADGNF=?, dateImportation=?, " +
                      "statut=?, associeId=? WHERE id=?";
         
         try (PreparedStatement pstmt = DatabaseConnection.obtenirConnexion().prepareStatement(sql)) {
@@ -70,10 +71,11 @@ public class VoitureDAO {
             pstmt.setDouble(9, voiture.getFraisDiversCAD());
             pstmt.setDouble(10, voiture.getFraisDiversGNF());
             pstmt.setDouble(11, voiture.getPrixReventeGNF());
-            pstmt.setDate(12, Date.valueOf(voiture.getDateImportation()));
-            pstmt.setString(13, voiture.getStatut());
-            pstmt.setInt(14, voiture.getAssocieId());
-            pstmt.setInt(15, voiture.getId());
+            pstmt.setDouble(12, voiture.getTauxChangeCADGNF());
+            pstmt.setDate(13, Date.valueOf(voiture.getDateImportation()));
+            pstmt.setString(14, voiture.getStatut());
+            pstmt.setInt(15, voiture.getAssocieId());
+            pstmt.setInt(16, voiture.getId());
             
             pstmt.executeUpdate();
         }
@@ -181,6 +183,7 @@ public class VoitureDAO {
         voiture.setFraisDiversCAD(rs.getDouble("fraisDiversCAD"));
         voiture.setFraisDiversGNF(rs.getDouble("fraisDiversGNF"));
         voiture.setPrixReventeGNF(rs.getDouble("prixReventeGNF"));
+        voiture.setTauxChangeCADGNF(rs.getDouble("tauxChangeCADGNF"));
         voiture.setDateImportation(rs.getDate("dateImportation").toLocalDate());
         voiture.setStatut(rs.getString("statut"));
         voiture.setAssocieId(rs.getInt("associeId"));

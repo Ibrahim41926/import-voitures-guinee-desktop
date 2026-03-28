@@ -533,7 +533,7 @@ public class MainController {
             chargerTableauBord();
             chargerIndicateurs();
             nouveauTauxField.clear();
-            statusLabel.setText("Nouveau taux applique: 1 CAD = " + String.format(Locale.US, "%,.2f", nouveauTaux) + " GNF");
+            statusLabel.setText("Nouveau taux enregistre pour les prochaines voitures: 1 CAD = " + String.format(Locale.US, "%,.2f", nouveauTaux) + " GNF");
         } catch (NumberFormatException e) {
             statusLabel.setText("Format invalide. Exemple: 6400");
         } catch (SQLException e) {
@@ -551,7 +551,7 @@ public class MainController {
             chargerTableauBord();
             chargerIndicateurs();
             nouveauTauxField.clear();
-            statusLabel.setText("Taux reinitialise: 1 CAD = " + String.format(Locale.US, "%,.2f", Constantes.TAUX_CHANGE_DEFAUT) + " GNF");
+            statusLabel.setText("Taux par defaut enregistre pour les prochaines voitures: 1 CAD = " + String.format(Locale.US, "%,.2f", Constantes.TAUX_CHANGE_DEFAUT) + " GNF");
         } catch (SQLException e) {
             statusLabel.setText("Erreur sauvegarde taux: " + e.getMessage());
         }
@@ -560,7 +560,7 @@ public class MainController {
     private void rafraichirTauxChange() {
         if (tauxActuelLabel != null) {
             tauxActuelLabel.setText(
-                "1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF"
+                "Taux courant nouvelles voitures: 1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF"
             );
         }
     }
@@ -628,7 +628,7 @@ public class MainController {
                 return;
             }
 
-            PdfReportExporter.export(fichier.toPath(), voitures, ConvertisseurDevise.getTauxChange());
+            PdfReportExporter.export(fichier.toPath(), voitures);
             statusLabel.setText("Rapport PDF genere: " + fichier.getAbsolutePath());
             afficherSuccesExportPdf(fichier);
         } catch (Exception e) {
@@ -819,7 +819,7 @@ public class MainController {
         rapport.getStyleClass().add("report-meta-strong");
         Label dateLabel = new Label("Genere le " + dateExport);
         dateLabel.getStyleClass().add("report-meta");
-        Label taux = new Label("Taux applique: 1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF");
+        Label taux = new Label("Taux courant nouvelles voitures: 1 CAD = " + String.format(Locale.US, "%,.2f", ConvertisseurDevise.getTauxChange()) + " GNF");
         taux.getStyleClass().add("report-meta");
         Label pagination = new Label("Page " + pageCourante + " / " + totalPages);
         pagination.getStyleClass().add("report-meta");

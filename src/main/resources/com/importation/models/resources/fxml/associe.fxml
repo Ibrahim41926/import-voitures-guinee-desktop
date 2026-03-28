@@ -43,7 +43,7 @@
                 <TableColumn text="Prenom" prefWidth="100"/>
                 <TableColumn text="Telephone" prefWidth="120"/>
                 <TableColumn text="Email" prefWidth="170"/>
-                <TableColumn text="%% Participation" prefWidth="120"/>
+                <TableColumn text="\% Participation" prefWidth="120"/>
             </columns>
         </TableView>
     </VBox>
@@ -72,7 +72,7 @@
             <Label text="Email :" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
             <TextField fx:id="emailField" promptText="email@example.com" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-            <Label text="%% Participation :" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label text="\% Participation :" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <TextField fx:id="pourcentageField" promptText="Calcul auto" editable="false" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
             <Label text="Voiture contribution :" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>

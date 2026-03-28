@@ -15,6 +15,7 @@ public class Voiture {
     private double fraisDiversCAD;
     private double fraisDiversGNF;
     private double prixReventeGNF;
+    private double tauxChangeCADGNF;
     private LocalDate dateImportation;
     private String statut; // EN_COURS, VENDUE, etc
     private int associeId;
@@ -139,6 +140,14 @@ public class Voiture {
 
     public void setPrixReventeGNF(double prixReventeGNF) {
         this.prixReventeGNF = prixReventeGNF;
+    }
+
+    public double getTauxChangeCADGNF() {
+        return tauxChangeCADGNF;
+    }
+
+    public void setTauxChangeCADGNF(double tauxChangeCADGNF) {
+        this.tauxChangeCADGNF = tauxChangeCADGNF;
     }
 
     public LocalDate getDateImportation() {

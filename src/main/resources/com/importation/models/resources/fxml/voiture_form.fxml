@@ -13,7 +13,7 @@
     <VBox styleClass="page-header" spacing="6">
         <Label text="Edition" styleClass="eyebrow"/>
         <Label text="Nouvelle Voiture" styleClass="title"/>
-        <Label text="Saisis les couts, le statut et l associe rattache a cette voiture." styleClass="lead-secondary" wrapText="true"/>
+        <Label text="Saisis les couts, le statut, le taux et l associe rattache a cette voiture." styleClass="lead-secondary" wrapText="true"/>
     </VBox>
 
     <GridPane hgap="12" vgap="12" styleClass="form-card">
@@ -49,15 +49,18 @@
         <Label text="Frais Divers GNF :" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
         <TextField fx:id="fraisDiversGNFField" promptText="0.00" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
 
-        <Label fx:id="prixReventeLabel" text="Prix Revente GNF :" styleClass="form-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <TextField fx:id="prixReventeField" promptText="0.00" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Taux CAD -> GNF :" styleClass="form-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="tauxChangeField" promptText="Ex: 6400" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
         <Label text="Statut :" styleClass="form-label" GridPane.rowIndex="5" GridPane.columnIndex="2"/>
         <ComboBox fx:id="statutCombo" prefWidth="180" GridPane.rowIndex="5" GridPane.columnIndex="3"/>
 
-        <Label text="Date Importation :" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="dateImportPicker" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-        <Label text="Associe(s) :" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
-        <ComboBox fx:id="associeCombo" prefWidth="180" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+        <Label fx:id="prixReventeLabel" text="Prix Revente GNF :" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="prixReventeField" promptText="0.00" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Date Importation :" styleClass="form-label" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+        <DatePicker fx:id="dateImportPicker" GridPane.rowIndex="6" GridPane.columnIndex="3"/>
+
+        <Label text="Associe(s) :" styleClass="form-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="associeCombo" prefWidth="180" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
     </GridPane>
 
     <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="dialog-actions">

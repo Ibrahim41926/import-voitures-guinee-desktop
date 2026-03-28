@@ -97,6 +97,9 @@ public class DatabaseConnection {
                 stmt.execute(requete);
             }
         }
+
+        ajouterColonneTauxChangeVoitureSiAbsente();
+        initialiserTauxChangeVoituresSansValeur();
     }
     
     /**
@@ -120,6 +123,52 @@ public class DatabaseConnection {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private static void ajouterColonneTauxChangeVoitureSiAbsente() throws SQLException {
+        if (colonneExiste("VOITURE", "tauxChangeCADGNF")) {
+            return;
+        }
+
+        try (Statement stmt = connexion.createStatement()) {
+            stmt.execute("ALTER TABLE VOITURE ADD COLUMN tauxChangeCADGNF DECIMAL(15,4)");
+        }
+    }
+
+    private static boolean colonneExiste(String table, String colonne) throws SQLException {
+        try (Statement stmt = connexion.createStatement();
+             ResultSet rs = stmt.executeQuery("PRAGMA table_info(" + table + ")")) {
+            while (rs.next()) {
+                if (colonne.equalsIgnoreCase(rs.getString("name"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void initialiserTauxChangeVoituresSansValeur() throws SQLException {
+        String sql = "UPDATE VOITURE SET tauxChangeCADGNF = ? WHERE tauxChangeCADGNF IS NULL OR tauxChangeCADGNF <= 0";
+        try (PreparedStatement pstmt = connexion.prepareStatement(sql)) {
+            pstmt.setDouble(1, obtenirTauxChangeConfigure());
+            pstmt.executeUpdate();
+        }
+    }
+
+    private static double obtenirTauxChangeConfigure() throws SQLException {
+        String sql = "SELECT valeur FROM CONFIGURATION WHERE cle = ?";
+        try (PreparedStatement pstmt = connexion.prepareStatement(sql)) {
+            pstmt.setString(1, "TAUX_CHANGE");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    double valeur = rs.getDouble("valeur");
+                    if (valeur > 0) {
+                        return valeur;
+                    }
+                }
+            }
+        }
+        return Constantes.TAUX_CHANGE_DEFAUT;
     }
 }
 

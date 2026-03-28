@@ -39,7 +39,7 @@
                 <VBox styleClass="page-header" spacing="6">
                     <Label text="Vue globale" styleClass="eyebrow"/>
                     <Label text="Tableau de Bord" styleClass="title"/>
-                    <Label text="Synthese des indicateurs clés, inventaire rapide et actions courantes." styleClass="lead-secondary" wrapText="true"/>  
+                    <Label text="Synthese des indicateurs cles, inventaire rapide et actions courantes." styleClass="lead-secondary" wrapText="true"/>
                 </VBox>
 
                 <HBox spacing="14" styleClass="kpi-row">
@@ -55,7 +55,7 @@
                     </VBox>
                     <VBox styleClass="kpi-card-copper" prefWidth="190">
                         <Label text="Reseau" styleClass="kpi-tag"/>
-                        <Label text="Total associés" styleClass="subtitle"/>
+                        <Label text="Total associes" styleClass="subtitle"/>
                         <Label fx:id="kpiTotalAssocies" text="0" styleClass="kpi-value"/>
                     </VBox>
                     <VBox styleClass="kpi-card-ink" prefWidth="250">
@@ -66,15 +66,15 @@
                 </HBox>
 
                 <HBox spacing="10" alignment="CENTER_LEFT" styleClass="action-bar">
-                    <Button text="Modifier voiture selectionnée" onAction="#modifierVoitureDashboard" styleClass="button-secondary"/>
-                    <Button text="Supprimer voiture selectionnée" onAction="#supprimerVoitureDashboard" styleClass="button-secondary"/>
+                    <Button text="Modifier voiture selectionnee" onAction="#modifierVoitureDashboard" styleClass="button-secondary"/>
+                    <Button text="Supprimer voiture selectionnee" onAction="#supprimerVoitureDashboard" styleClass="button-secondary"/>
                     <Button text="Exporter en PDF" onAction="#exporterTableauBordPdf" styleClass="button-secondary"/>
                 </HBox>
 
                 <VBox styleClass="table-card" VBox.vgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" styleClass="table-card-header">
                         <VBox spacing="4">
-                            <Label text="Inventaire detaillé" styleClass="section-title"/>
+                            <Label text="Inventaire detaille" styleClass="section-title"/>
                             <Label text="Selectionne une ligne pour modifier, supprimer ou exporter." styleClass="section-note"/>
                         </VBox>
                     </HBox>
@@ -83,7 +83,7 @@
                             <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
                             <TableColumn fx:id="colMarque" text="Marque" prefWidth="100"/>
                             <TableColumn fx:id="colModele" text="Modele" prefWidth="100"/>
-                            <TableColumn fx:id="colAnnee" text="Année" prefWidth="70"/>
+                            <TableColumn fx:id="colAnnee" text="Annee" prefWidth="70"/>
                             <TableColumn fx:id="colImmatriculation" text="Immatriculation" prefWidth="120"/>
                             <TableColumn fx:id="colPrixAchatCad" text="Prix achat CAD" prefWidth="120"/>
                             <TableColumn fx:id="colTransportCad" text="Transport CAD" prefWidth="110"/>
@@ -108,7 +108,7 @@
                 <VBox styleClass="page-header" spacing="6">
                     <Label text="Finance" styleClass="eyebrow"/>
                     <Label text="Gestion Taux de Change" styleClass="title"/>
-                    <Label text="Ajuste le referentiel CAD -> GNF avant de recalculer les operations." styleClass="lead" wrapText="true"/>
+                    <Label text="Ajuste le referentiel CAD -> GNF pour les prochaines voitures ajoutees." styleClass="lead" wrapText="true"/>
                 </VBox>
 
                 <HBox spacing="16">
@@ -120,21 +120,21 @@
                             <Button text="Appliquer" onAction="#appliquerNouveauTaux"/>
                             <Button text="Par defaut" onAction="#reinitialiserTauxDefaut" styleClass="button-secondary"/>
                         </HBox>
-                        <Label text="Le taux est persisté et réutilisé sur les écrans de coûts, ventes et exports." styleClass="section-note" wrapText="true"/>
+                        <Label text="Le taux est persiste pour les nouvelles voitures. Les voitures deja enregistrees gardent leur taux." styleClass="section-note" wrapText="true"/>
                     </VBox>
 
                     <VBox styleClass="info-card" spacing="10" prefWidth="280">
                         <Label text="Impact direct" styleClass="section-title"/>
-                        <Label text="Chaque variation du taux influence les coûts convertis, le tableau de bord et la lecture des marges." styleClass="body-copy" wrapText="true"/>
-                        <Label text="Utilise un taux stable avant d exporter ou d imprimer les donnees." styleClass="section-note" wrapText="true"/>
+                        <Label text="Chaque nouveau taux est utilise pour les prochaines saisies. Les couts des voitures deja enregistrees restent inchanges." styleClass="body-copy" wrapText="true"/>
+                        <Label text="Modifie le taux avant d ajouter une nouvelle voiture si besoin." styleClass="section-note" wrapText="true"/>
                     </VBox>
                 </HBox>
             </VBox>
 
             <VBox fx:id="baseDonneesPane" styleClass="page">
                 <VBox styleClass="page-header" spacing="6">
-                    <Label text="Zone avancée" styleClass="eyebrow"/>
-                    <Label text="Gestion Base de Données" styleClass="title"/>
+                    <Label text="Zone avancee" styleClass="eyebrow"/>
+                    <Label text="Gestion Base de Donnees" styleClass="title"/>
                     <Label text="Execute des requetes SQLite pour auditer ou corriger les donnees." styleClass="lead" wrapText="true"/>
                 </VBox>
 

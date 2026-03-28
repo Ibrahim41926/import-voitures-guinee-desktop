@@ -19,19 +19,23 @@ public class ConvertisseurDevise {
      * Convertit de CAD vers GNF.
      */
     public static double cadVersGnf(double montantCAD) {
-        if (montantCAD < 0) {
-            throw new IllegalArgumentException("Le montant ne peut pas etre negatif");
-        }
-        return montantCAD * tauxChange;
+        return cadVersGnf(montantCAD, tauxChange);
+    }
+
+    /**
+     * Convertit de CAD vers GNF avec un taux explicite.
+     */
+    public static double cadVersGnf(double montantCAD, double tauxChangeApplique) {
+        validerMontantNonNegatif(montantCAD);
+        validerTauxPositif(tauxChangeApplique);
+        return montantCAD * tauxChangeApplique;
     }
 
     /**
      * Convertit de GNF vers CAD.
      */
     public static double gnfVersCad(double montantGNF) {
-        if (montantGNF < 0) {
-            throw new IllegalArgumentException("Le montant ne peut pas etre negatif");
-        }
+        validerMontantNonNegatif(montantGNF);
         return montantGNF / tauxChange;
     }
 
@@ -46,9 +50,7 @@ public class ConvertisseurDevise {
      * Definit le taux en memoire.
      */
     public static void setTauxChange(double nouveauTaux) {
-        if (nouveauTaux <= 0) {
-            throw new IllegalArgumentException("Le taux de change doit etre positif");
-        }
+        validerTauxPositif(nouveauTaux);
         tauxChange = nouveauTaux;
     }
 
@@ -117,5 +119,17 @@ public class ConvertisseurDevise {
             return String.format("%.0f %s", montant, devise);
         }
         return String.format("%.2f %s", montant, devise);
+    }
+
+    private static void validerMontantNonNegatif(double montant) {
+        if (montant < 0) {
+            throw new IllegalArgumentException("Le montant ne peut pas etre negatif");
+        }
+    }
+
+    private static void validerTauxPositif(double taux) {
+        if (taux <= 0) {
+            throw new IllegalArgumentException("Le taux de change doit etre positif");
+        }
     }
 }

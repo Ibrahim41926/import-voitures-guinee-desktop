@@ -13,11 +13,13 @@ public class VoitureController {
      * Ajoute une nouvelle voiture
      */
     public static int ajouter(Voiture voiture) throws SQLException {
+        initialiserTauxChangeSiAbsent(voiture);
         return VoitureDAO.ajouter(voiture);
     }
     
    
     public static void mettre_a_jour(Voiture voiture) throws SQLException {
+        initialiserTauxChangeSiAbsent(voiture);
         VoitureDAO.mettre_a_jour(voiture);
     }
     
@@ -55,9 +57,17 @@ public class VoitureController {
                          voiture.getAssuranceCAD() + 
                          voiture.getFraisDiversCAD();
         
-        double fraisCADEnGNF = ConvertisseurDevise.cadVersGnf(fraisCAD);
+        double fraisCADEnGNF = ConvertisseurDevise.cadVersGnf(fraisCAD, obtenirTauxChangeApplique(voiture));
         
         return fraisCADEnGNF + voiture.getDedouanementGNF() + voiture.getFraisDiversGNF();
+    }
+
+    public static double obtenirTauxChangeApplique(Voiture voiture) {
+        if (voiture == null) {
+            return ConvertisseurDevise.getTauxChange();
+        }
+        double tauxApplique = voiture.getTauxChangeCADGNF();
+        return tauxApplique > 0 ? tauxApplique : ConvertisseurDevise.getTauxChange();
     }
     
     
@@ -116,6 +126,12 @@ public class VoitureController {
         }
         String s = statut.trim().toUpperCase();
         return "VENDUE".equals(s) || "VENDU".equals(s);
+    }
+
+    private static void initialiserTauxChangeSiAbsent(Voiture voiture) {
+        if (voiture != null && voiture.getTauxChangeCADGNF() <= 0) {
+            voiture.setTauxChangeCADGNF(ConvertisseurDevise.getTauxChange());
+        }
     }
 }
 

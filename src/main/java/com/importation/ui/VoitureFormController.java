@@ -4,6 +4,7 @@ import com.importation.models.Associe;
 import com.importation.models.Voiture;
 import com.importation.models.dao.AssocieDAO;
 import com.importation.models.dao.controllers.VoitureController;
+import com.importation.models.dao.controllers.utils.ConvertisseurDevise;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -42,6 +43,8 @@ public class VoitureFormController {
     @FXML
     private TextField fraisDiversGNFField;
     @FXML
+    private TextField tauxChangeField;
+    @FXML
     private TextField prixReventeField;
     @FXML
     private Label prixReventeLabel;
@@ -61,11 +64,15 @@ public class VoitureFormController {
         statutCombo.setValue("EN_COURS");
         statutCombo.valueProperty().addListener((obs, oldVal, newVal) -> mettreAJourVisibilitePrixRevente(newVal));
         dateImportPicker.setValue(LocalDate.now());
+        tauxChangeField.setText(String.valueOf(ConvertisseurDevise.getTauxChange()));
+        mettreAJourEditionTaux(false);
+
         try {
             associeCombo.setItems(FXCollections.observableArrayList(AssocieDAO.obtenirTous()));
         } catch (SQLException e) {
-            afficherErreur("Erreur chargement", "Impossible de charger les associés: " + e.getMessage());
+            afficherErreur("Erreur chargement", "Impossible de charger les associes: " + e.getMessage());
         }
+
         mettreAJourVisibilitePrixRevente(statutCombo.getValue());
     }
 
@@ -76,8 +83,10 @@ public class VoitureFormController {
     public void setVoiture(Voiture voiture) {
         this.voitureEnEdition = voiture;
         if (voiture == null) {
+            mettreAJourEditionTaux(false);
             return;
         }
+
         marqueField.setText(voiture.getMarque());
         modeleField.setText(voiture.getModele());
         anneeSpinner.setText(String.valueOf(voiture.getAnnee()));
@@ -88,10 +97,13 @@ public class VoitureFormController {
         dedouanementField.setText(String.valueOf(voiture.getDedouanementGNF()));
         fraisDiversCADField.setText(String.valueOf(voiture.getFraisDiversCAD()));
         fraisDiversGNFField.setText(String.valueOf(voiture.getFraisDiversGNF()));
+        tauxChangeField.setText(String.valueOf(obtenirTauxPourAffichage(voiture)));
         prixReventeField.setText(String.valueOf(voiture.getPrixReventeGNF()));
         dateImportPicker.setValue(voiture.getDateImportation());
         statutCombo.setValue(voiture.getStatut());
         mettreAJourVisibilitePrixRevente(voiture.getStatut());
+        mettreAJourEditionTaux(true);
+
         if (voiture.getAssocieId() > 0) {
             for (Associe associe : associeCombo.getItems()) {
                 if (associe.getId() == voiture.getAssocieId()) {
@@ -121,17 +133,23 @@ public class VoitureFormController {
             voiture.setDedouanementGNF(lireDouble(dedouanementField));
             voiture.setFraisDiversCAD(lireDouble(fraisDiversCADField));
             voiture.setFraisDiversGNF(lireDouble(fraisDiversGNFField));
+            voiture.setTauxChangeCADGNF(lireTauxChange());
             voiture.setDateImportation(dateImportPicker.getValue() != null ? dateImportPicker.getValue() : LocalDate.now());
             voiture.setStatut(statutCombo.getValue() != null ? statutCombo.getValue() : "EN_COURS");
+
             if (estStatutVendu(voiture.getStatut())) {
                 voiture.setPrixReventeGNF(lireDouble(prixReventeField));
             } else {
                 voiture.setPrixReventeGNF(0.0);
             }
+
             voiture.setAssocieId(associeCombo.getValue() != null ? associeCombo.getValue().getId() : 0);
 
             if (!VoitureController.valider(voiture)) {
-                afficherErreur("Validation", "Verifiez les donnees: annee valide, prix d'achat > 0, date requise et prix revente > 0 si statut VENDUE.");
+                afficherErreur(
+                    "Validation",
+                    "Verifiez les donnees: annee valide, prix d'achat > 0, date requise et prix revente > 0 si statut VENDUE."
+                );
                 return;
             }
 
@@ -145,9 +163,10 @@ public class VoitureFormController {
             if (onSaved != null) {
                 onSaved.run();
             }
+
             fermer();
         } catch (NumberFormatException e) {
-            afficherErreur("Erreur", "Les champs numeriques doivent contenir des nombres valides");
+            afficherErreur("Erreur", "Les champs numeriques doivent contenir des nombres valides et le taux doit etre positif");
         } catch (SQLException e) {
             afficherErreur("Erreur BD", "Impossible d'enregistrer: " + e.getMessage());
         }
@@ -159,8 +178,16 @@ public class VoitureFormController {
     }
 
     private double lireDouble(TextField field) {
-        String text = field.getText().trim();
+        String text = field.getText().trim().replace(',', '.');
         return text.isEmpty() ? 0.0 : Double.parseDouble(text);
+    }
+
+    private double lireTauxChange() {
+        double taux = lireDouble(tauxChangeField);
+        if (taux <= 0) {
+            throw new NumberFormatException("Le taux de change doit etre positif");
+        }
+        return taux;
     }
 
     private String lireTexteNullable(TextField field) {
@@ -189,6 +216,21 @@ public class VoitureFormController {
         }
         String s = statut.trim().toUpperCase();
         return "VENDUE".equals(s) || "VENDU".equals(s);
+    }
+
+    private double obtenirTauxPourAffichage(Voiture voiture) {
+        double taux = voiture.getTauxChangeCADGNF();
+        return taux > 0 ? taux : ConvertisseurDevise.getTauxChange();
+    }
+
+    private void mettreAJourEditionTaux(boolean modeEdition) {
+        tauxChangeField.setEditable(!modeEdition);
+        tauxChangeField.setFocusTraversable(!modeEdition);
+        if (modeEdition) {
+            tauxChangeField.setPromptText("Taux historique conserve");
+        } else {
+            tauxChangeField.setPromptText("Ex: 6400");
+        }
     }
 
     private void fermer() {
